@@ -372,8 +372,15 @@ Elody for deployment: Acting as a "click-and-connect" interface, this component 
 
 # Config versus data shape validation
 
-Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component.
-However, the demonstrator describes a use case where we need data shape validation.
+Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component, so it can be listed in a user interface (Elody, SHACL UI...)
+
+However, the demonstrator describes a use case where we need data shape validation: does the shape of the datasource conflict with the input/output combination of shapes of processors?
+
+The :PipelineComponents described above are generic descriptions where the config is not materialized yet. A shape is provided for validating the config in a later stage.
+
+For Semantic Works service, the approach is focusing on the description of input/output data shapes: https://github.com/DiSHACLed/discovery-specification/blob/main/20250422142901-describing_microservices.md
+Below, I will give some examples how the data shape approach looks on the ldio and rdf connect services:
+
 
 ## Example of instance pipeline component
 
