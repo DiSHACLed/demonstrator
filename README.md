@@ -52,8 +52,80 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
         dcat:hadRole :configShape ;
         dcterms:relation :ldioHttpInPollerConfigShape .
     ] .
+# Shape of the config of LdioHttpInPoller
+:ldioHttpInPollerConfigShape a sh:NodeShape ;
+  sh:target [
+            a sh:SPARQLTarget ;
+            sh:prefixes :prefixes ;
+            sh:select """
+                    SELECT ?this
+                    WHERE {
+                        ?step tc:toBeCarriedOutByComponent :ldioHttpInPoller .
+                        ?step p-plan:hasInputVar ?this .
+                        ?this a tc:Config .
+                        }
+                  """ ;
+              ] ;
+        sh:property [
+            sh:path tc:embedded ;
+            sh:node [
+                a sh:NodeShape ;
+                sh:property [
+                  sh:path :url ;
+                      sh:datatype xsd:string ;
+                      sh:minCount 0 ;
+                      sh:maxCount 1 ;
+                      sh:message "URL may have max one value of type string." ;
+                ], [
+                  sh:path :interval ;
+                      sh:datatype xsd:duration ;
+                      sh:minCount 0 ;
+                      sh:maxCount 1 ;
+                      sh:message "Interval may have max one value of type xsd:duration." ;
+                ] ;
+            ] ;
+        ] .
 
+# This deviates from how RDF Connect currently describe processors
+:thresholdMonitoringProcessor a :PipelineComponent , rdfc:ThresholdMonitoringProcessor ;
+  dcat:qualifiedRelation [
+          a dcat:Relationship;
+          dcat:hadRole :configShape ;
+          dcterms:relation :thresholdMonitoringProcessorShape .
+      ] .
 
+:thresholdMonitoringProcessorShape a sh:NodeShape ;
+  sh:target [
+            a sh:SPARQLTarget ;
+            sh:prefixes :prefixes ;
+            sh:select """
+                    SELECT ?this
+                    WHERE {
+                        ?step tc:toBeCarriedOutByComponent :thresholdMonitoringProcessor .
+                        ?step p-plan:hasInputVar ?this .
+                        ?this a tc:Config .
+                        }
+                  """ ;
+              ] ;
+        sh:property [
+            sh:path tc:embedded ;
+            sh:node [
+                a sh:NodeShape ;
+                sh:property [
+                  sh:path :value ;
+                      sh:datatype xsd:decimal ;
+                      sh:minCount 1 ;
+                      sh:maxCount 1 ;
+                      sh:message "Threshold value must be provided of type decimal." ;
+                ], [
+                  sh:path :unit ;
+                      sh:datatype xsd:IRI ;
+                      sh:minCount 1 ;
+                      sh:maxCount 1 ;
+                      sh:message "Unit must be provided as URI." ;
+                ] ;
+            ] ;
+        ] .
 
 # Instances of processor / pipeline components where the config is defined and input / output shape is clear
 
@@ -273,12 +345,22 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates a Semantic Alert message.
 
 ```
-
+:demoThresholdMonitoringProcessor a :PipelineStep ;
+  :toBeCarriedOutByProcessor :thresholdMonitoringProcessor ;
+  p-plan:hasInputVar [
+    a tc:Config;
+    tc:embedded
+    [
+      :value "7"
+      :unit <http://qudt.org/vocab/unit/CentiM>
+    ]
+  ] .
 ```
 
 ### Semantic Works Service
 
 Detects the alert and automatically triggers a notification service (e.g., an emergency email) sending out a couple of e-mails to emergency responders.
+
 
 ### Elody for alert viz
 
