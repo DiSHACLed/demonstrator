@@ -24,12 +24,20 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
 
 :waterLevelsInMm a dcat:Dataset ;
   dcterms:conformsTo :waterLevelsInMmShape .
+
+:rawDataStreamInCm a dcat:Service ;
+  dcat:servesdataset :waterLevelsInCm .
+
+:rawDataStreamInMm a dcat:Service ;
+  dcat:servesdataset :waterLevelsInMm .
 ```
 
 
 ### The Shape construction algorithm
 
 This component utilizes the DiSHACLed shape-generation tool to ‘automatically’ create SHACL profiles for the datasets. By integrating this generator (or validator if creation fails), the system ensures that all data adheres to predefined structural constraints and semantic standards from the outset.
+
+The SHACL profile of the water levels in cm:
 
 ```
 @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -97,14 +105,104 @@ This component utilizes the DiSHACLed shape-generation tool to ‘automatically�
 
 Mocked JSON-LD API endpoints producing (mocked) real-time measurements of water levels. Source A: Publishes values in centimeters (cm). Source B: Publishes values in millimeters (mm). Nice to have: A visual slider to manually increase or decrease data produced at the source to induce a "flood" during the demo. Data adheres to realistic dataset, but is not produced by real sensor.
 
+```
+{
+  "@context": {
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": "http://example.org/observation/1",
+  "@type": "sosa:Observation",
+
+  "sosa:hasResult": {
+    "@type": "schema:QuantitativeValue",
+    "schema:value": {
+      "@value": 123.4,
+      "@type": "xsd:decimal"
+    },
+    "schema:unitText": "cm",
+    "schema:unitCode": {
+      "@id": "http://qudt.org/vocab/unit/CentiM"
+    }
+  },
+
+  "sosa:observedProperty": {
+    "@id": "http://example.org/property/waterLevel"
+  },
+
+  "sosa:phenomenonTime": {
+    "@value": "2026-04-01T10:15:00Z",
+    "@type": "xsd:dateTime"
+  }
+}
+```
+
+Shape of the mocked JSON-LD API (providing water levels in cm):
+
+```
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+
+:rawDataStreamInCm dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole ext:outputShape ;
+        dcterms:relation :waterLevelsInCmShape
+    ] .
+```
+
+We use the qualified relationship for services, because we want to differentiate between input and output. Here, the API only has an output shape.
+
 ### LDIO Processor
 
 Standardizes raw (real time only) API data into a unified, versioned LDES (Linked Data Event Stream), providing a reliable history for downstream services.
+
+A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor observation as an LDES member:
+```
+{
+  "@context": {
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "dct": "http://purl.org/dc/terms/",
+  },
+  "@id": "http://example.org/observation/1/2026-04-01T10:17:00Z",
+  "@type": "sosa:Observation",
+  "prov:generatedAtTime": {
+    "@value": "2026-04-01T10:17:00Z",
+    "@type": "xsd:dateTime"
+  },
+  "dct:isVersionOf": "http://example.org/observation/1",
+  "sosa:hasResult": {
+    "@type": "schema:QuantitativeValue",
+    "schema:value": {
+      "@value": 123.4,
+      "@type": "xsd:decimal"
+    },
+    "schema:unitText": "cm",
+    "schema:unitCode": {
+      "@id": "http://qudt.org/vocab/unit/CentiM"
+    }
+  },
+
+  "sosa:observedProperty": {
+    "@id": "http://example.org/property/waterLevel"
+  },
+
+  "sosa:phenomenonTime": {
+    "@value": "2026-04-01T10:15:00Z",
+    "@type": "xsd:dateTime"
+  }
+}
+```
 
 ### RDF-Connect Service
 
 Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates a Semantic Alert message.
 
+```
+
+```
 
 ### Semantic Works Service
 
