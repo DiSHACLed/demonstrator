@@ -19,15 +19,17 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
   dct:title "Datasets and processors used in DiSHACLed demonstrator.";
   dcat:dataset :waterLevelsInCm, :waterLevelsInMm .
 
+# Source dataset published by the mock JSON-LD APIs, but could also be others like LDES or SPARQL
 :waterLevelsInCm a dcat:Dataset ;
   dcterms:conformsTo :waterLevelsInCmShape .
 
 :waterLevelsInMm a dcat:Dataset ;
   dcterms:conformsTo :waterLevelsInMmShape .
 
-:rawDataStreamInCm a dcat:Service ;
+# The mock JSON-LD APIs
+:rawDataStreamInCm a dcat:DataService ;
   dcat:servesdataset :waterLevelsInCm ;
-  # Not sure this is needed, because dataset already has this shape
+  # Optional, because dataset already provides this shape
   dcat:qualifiedRelation [
         a dcat:Relationship;
         dcat:hadRole :outputShape ;
@@ -35,7 +37,26 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
     ] .
 
 :rawDataStreamInMm a dcat:Service ;
-  dcat:servesdataset :waterLevelsInMm .
+  dcat:servesdataset :waterLevelsInMm ;
+  # Optional, because dataset already provides this shape
+  dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole :outputShape ;
+        dcterms:relation :waterLevelsInMmShape
+    ] .
+
+# Generic processor / pipeline components where config still needs to be configured
+:ldioHttpInPoller a :PipelineComponent ;
+  dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole :configShape ;
+        dcterms:relation :ldioHttpInPollerConfigShape .
+    ] .
+
+
+
+# Instances of processor / pipeline components where the config is defined and input / output shape is clear
+
 ```
 
 
@@ -178,11 +199,9 @@ A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor obs
       "@id": "http://qudt.org/vocab/unit/CentiM"
     }
   },
-
   "sosa:observedProperty": {
     "@id": "http://example.org/property/waterLevel"
   },
-
   "sosa:phenomenonTime": {
     "@value": "2026-04-01T10:15:00Z",
     "@type": "xsd:dateTime"
@@ -190,20 +209,64 @@ A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor obs
 }
 ```
 
-How will the pipeline generator know which SPARQL Construct must be used?
-Should we make pre-configured processors that can be reused? For example, SSN/SOSA input -> LDES member SPARQL construct transformer
+#### LDIO HttpInPoller
 
-#### HttpInPoller
+The config of the LDIO HttpInPoller will have a semantic description in the pipeline definition:
 
-Todo semantic description
+```
+:demodioHttpInPoller a :PipelineStep ;
+  :toBeCarriedOutByProcessor :ldioHttpInPoller ;
+  p-plan:hasInputVar [
+        a tc:Config;
+        tc:embedded
+        [
+          :url "http://path-to-mock-api"
+        ],
+        [
+          :interval "PT5M"
+        ]
+    ] .
+```
 
 #### SPARQL CONSTRUCT transformer
 
-Todo semantic description
+```
+:demoLdioSparqlConstructTransformer a :PipelineStep ;
+  :toBeCarriedOutByProcessor :ldioSparqlConstructTransformer ;
+  p-plan:hasInputVar [
+        a tc:Config;
+        tc:embedded
+        [
+          :query """
+            PREFIX dct: <http://purl.org/dc/terms/> .
+            PREFIX prov: <http://www.w3.org/ns/prov#> .
+            CONSTRUCT {
+              ?versionedS ?p ?o ;
+                  prov:generatedAtTime ?generatedAtTime ;
+                  dct:isVersionOf ?s .
+            } WHERE {
+              ?s ?p ?o .
+              BIND(URI(CONCAT(STR(?s), '/', STR(?now))) as ?versionedS)
+              BIND (NOW() as ?generatedAtTime)
+            }
+          """
+        ]
+    ] .
+```
 
 #### HTTP Out
 
-Todo semantic description
+```
+:demoLdioHttpOut a :PipelineStep ;
+  :toBeCarriedOutByProcessor :ldioHttpOut ;
+  p-plan:hasInputVar [
+        a tc:Config;
+        tc:embedded
+        [
+          :url "http://path-to-rdf-connect-channel"
+        ]
+    ] .
+```
 
 ### RDF-Connect Service
 
@@ -224,3 +287,12 @@ Elody is used as a clear UI for visualizing incoming flood-detection alerts in a
 
 
 Elody for deployment: Acting as a "click-and-connect" interface, this component allows users to inspect SHACL contracts and orchestrate the connection between datasets and services to manage configurations & deployment.
+
+# Config versus data shape validation
+
+Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component.
+However, the demonstrator describes a use case where we need data shape validation.
+
+## Example of instance pipeline component
+
+For example, SSN/SOSA input -> LDES member SPARQL construct transformer
