@@ -26,7 +26,13 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
   dcterms:conformsTo :waterLevelsInMmShape .
 
 :rawDataStreamInCm a dcat:Service ;
-  dcat:servesdataset :waterLevelsInCm .
+  dcat:servesdataset :waterLevelsInCm ;
+  # Not sure this is needed, because dataset already has this shape
+  dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole :outputShape ;
+        dcterms:relation :waterLevelsInCmShape
+    ] .
 
 :rawDataStreamInMm a dcat:Service ;
   dcat:servesdataset :waterLevelsInMm .
@@ -138,21 +144,9 @@ Mocked JSON-LD API endpoints producing (mocked) real-time measurements of water 
 }
 ```
 
-Shape of the mocked JSON-LD API (providing water levels in cm):
-
-```
-@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
-
-:rawDataStreamInCm dcat:qualifiedRelation [
-        a dcat:Relationship;
-        dcat:hadRole ext:outputShape ;
-        dcterms:relation :waterLevelsInCmShape
-    ] .
-```
-
 We use the qualified relationship for services, because we want to differentiate between input and output. Here, the API only has an output shape.
 
-### LDIO Processor
+### LDIO Service
 
 Standardizes raw (real time only) API data into a unified, versioned LDES (Linked Data Event Stream), providing a reliable history for downstream services.
 
@@ -195,6 +189,21 @@ A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor obs
   }
 }
 ```
+
+How will the pipeline generator know which SPARQL Construct must be used?
+Should we make pre-configured processors that can be reused? For example, SSN/SOSA input -> LDES member SPARQL construct transformer
+
+#### HttpInPoller
+
+Todo semantic description
+
+#### SPARQL CONSTRUCT transformer
+
+Todo semantic description
+
+#### HTTP Out
+
+Todo semantic description
 
 ### RDF-Connect Service
 
