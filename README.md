@@ -92,7 +92,8 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
           a dcat:Relationship;
           dcat:hadRole :configShape ;
           dcterms:relation :thresholdMonitoringProcessorShape .
-      ] .
+      ] ;
+  osw:hasDependency rdfc:NodeRunner .
 
 :thresholdMonitoringProcessorShape a sh:NodeShape ;
   sh:target [
@@ -127,8 +128,57 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             ] ;
         ] .
 
-# Instances of processor / pipeline components where the config is defined and input / output shape is clear
+rdfc:NodeRunner a tc:PipelineComponent;
+    rdfs:label "Javascript Node Runner" ; 
+    osw:hasDependency rdfc:Orchestrator ;
+    dcterms:conformsTo :NodeRunnerConfigShape .
+ 
+rdfc:Orchestrator a tc:PipelineComponent ;
+    rdfs:label "RDF Connect Orchestrator" ;
+    tc:hasDefaultConfig [
+        a tc:Config, tc:MicroServiceConfig ;
+        tc:literal """
+  rdf-connect:
+    container_name: rdf-connect
+    image: rdf-connect:latest
+    build: ../../resources/rdfc-docker
+    volumes:
+      - ./rdfc_pipeline.ttl:/workspace/pipeline/pipeline.ttl:ro
+    environment:
+      LOG_LEVEL: debug
+    command: npx rdfc /workspace/pipeline/pipeline.ttl
+"""
+] .
 
+# The processors of Semantic.Workshave shapes for input / output data as described [here](https://github.com/DiSHACLed/discovery-specification/blob/main/20250422142901-describing_microservices.md), see below this document
+:loketErrorAlertProcessor a :PipelineComponent ;
+  osw:hasDependency :loketErrorAlertService .
+
+:loketErrorAlertService a :PipelineComponent, mu:Microservice, dcat:Dataset ;
+  rdfs:label "Service that is responsible for sending out alerts when errors are inserted in the store. Build using the MU Javascript template.";
+  dcat:accessUrl <https://github.com/lblod/loket-error-alert-service> ;
+  dcterms:conformsTo :loketErrorAlertServiceShape .
+
+:loketErrorAlertServiceShape a sh:NodeShape ;
+  sh:target [
+            a sh:SPARQLTarget ;
+            sh:prefixes :prefixes ;
+            sh:select """
+                    SELECT ?this
+                    WHERE {
+                        ?step tc:toBeCarriedOutByComponent :loketErrorAlertService .
+                        ?step p-plan:hasInputVar ?this .
+                        ?this a tc:Config .
+                        }
+                  """ ;
+              ] ;
+        sh:property [
+            sh:path tc:embedded ;
+            sh:node [
+                a sh:NodeShape ;
+                # TODO
+            ] ;
+        ] .
 ```
 
 
@@ -342,11 +392,11 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 
 ### RDF-Connect Service
 
-Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates a Semantic Alert message.
+Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates an Error message.
 
 ```
 :demoThresholdMonitoringProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor :thresholdMonitoringProcessor ;
+  :toBeCarriedOutByProcessor rdfc:thresholdMonitoringProcessor ;
   p-plan:hasInputVar [
     a tc:Config;
     tc:embedded
@@ -357,9 +407,75 @@ Performs continuous threshold monitoring on the LDES stream. If a value exceeds 
   ] .
 ```
 
-### Semantic Works Service
+### SPARQL ingest service
+
+The Error message must be inserted in a triple store in order that the Semantic Works service can further process.
+
+```
+:demoThresholdMonitoringProcessor a :PipelineStep ;
+  :toBeCarriedOutByProcessor rdfc:SPARQLIngest ;
+  p-plan:hasInputVar [
+    a tc:Config;
+    tc:embedded
+    [
+      :memberStream <in> ;
+      :ingestConfig [
+        :operationMode ""Replication"
+      ]
+    ]
+  ] .
+```
+
+### Semantic Works Service(s)
 
 Detects the alert and automatically triggers a notification service (e.g., an emergency email) sending out a couple of e-mails to emergency responders.
+
+In practice, the lblod/loket-error-alert-service gets triggered by the Error where the subject is the service rdfc:thresholdMonitoringProcessor, and generates an Email in the triple store.
+
+Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
+
+```
+:demoLoketErrorAlertProcessor a :PipelineStep ;
+  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+  p-plan:hasInputVar [
+    a tc:Config;
+    tc:embedded
+    [
+      :EMAIL_FROM "test@domain.net" ;
+      :EMAIL_TO "test@domain.net,123@domain.com"
+    ] ;
+    tc:literal """
+      {
+        // URI Base to be used at data creation.
+        "base": "http://lblod.data.gift",
+        "service": {
+          // URI Resource identifier of this service
+          "uri": "http://lblod.data.gift/services/loket-error-alert-service"
+        },
+        // Candidate service that creates delta's of interest. If non is configured, any service is accepted.
+        "creators": ["https://w3id.org/rdf-connect#thresholdMonitoringProcessor"],
+        "email": {
+          // Created emails will be placed here.
+          "folder": 'http://data.lblod.info/id/mail-folders/2'
+        },
+        "graph": {
+          // Graph were emails live.
+          "email": "http://mu.semte.ch/graphs/system/email"
+        }
+      }
+    """ .
+  ] .
+
+:demoDeliverEmailProcessor: a :PipelineStep ;
+  :toBeCarriedOutByProcessor :deliverEmailService: ;
+  p-plan:hasInputVar [
+    a tc:Config;
+    tc:embedded
+    [
+      :MAILBOX_URI 'http://data.lblod.info/id/mailboxes/1'
+    ]
+  ] .
+```
 
 
 ### Elody for alert viz
@@ -381,6 +497,9 @@ The :PipelineComponents described above are generic descriptions where the confi
 For Semantic Works service, the approach is focusing on the description of input/output data shapes: https://github.com/DiSHACLed/discovery-specification/blob/main/20250422142901-describing_microservices.md
 Below, I will give some examples how the data shape approach looks on the ldio and rdf connect services:
 
+```
+:loketErrorAlertProcessor 
+```
 
 ## Example of instance pipeline component
 
