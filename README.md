@@ -14,6 +14,8 @@ The central repository. It doesn't just list URLs; it stores SHACL "Contracts" f
 Datasets linked with shapes via dcterms:conformsTo (other options are possible according to [the specification](https://dishacled.github.io/discovery-specification/), does not matter if the discovery algorithm is used):
 
 - [ ] Update https://dishacled-api.azurewebsites.net/api/v1/catalog with the services and shapes of datasets and services
+- [ ] Make 1 shape for source A dataset and 1 shape for source B dataset instead of shapes on dataset and service level
+- [ ] Is the assumption that pipeline component = dcat service accurate?
 
 ```
 :dishacled-catalogue
@@ -485,12 +487,20 @@ Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
 Elody is used as a clear UI for visualizing incoming flood-detection alerts in a more interactive way than just e-mails. It maps the context of each alert, including its source, thresholds, and underlying contracts, to make the data flow tangible and intuitive for stakeholders during demonstrations.
 
 
+### Elody for deployment (pipeline builder)
 
-Elody for deployment: Acting as a "click-and-connect" interface, this component allows users to inspect SHACL contracts and orchestrate the connection between datasets and services to manage configurations & deployment.
+Acting as a "click-and-connect" interface, this component allows users to inspect SHACL contracts and orchestrate the connection between datasets and services to manage configurations & deployment.
+
+- [ ] Elody for deployment = creating the pipeline definition file
+- [ ] Where does the pipeline validation happen? Could be on two places: in the Elody UI, but also in the generator (where validation is focusing on the generated result)
+- [ ] Who will create the validation library of a pipeline (going through the chain of pipeline processors and check output with input of previous processor, and use shape matching algorithm)
+- [ ] Pipeline generator = building the Docker compose with all configuration
 
 # Config versus data shape validation
 
-Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component, so it can be listed in a user interface (Elody, SHACL UI...)
+- [ ] We have a shape construction algorithm for datasets but not for pipeline components/services (see below). We assume that every pipeline component needs its own strategy to generate input/output shapes.
+- [ ] Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component, so it can be listed in a user interface (Elody, SHACL UI...). We suggest to also include pipeline steps (with config and input/output shape of the pipeline component) in the catalogue, so extra reusability of pipeline steps and validation can be achieved.
+- [ ] For validating the demonstrator that the pipeline breaks when the unit of the source changes: the threshold monitoring processor have value and unit configuration parameters. When a pipeline step with the threshold monitoring processor is configured, then an input shape can be generated. When the source shape changes, this should create a validation error. However, what if LDIO changes the shape or when we don't have input/output shapes of processors? Will we send a sample through the pipeline to validate?
 
 However, the demonstrator describes a use case where we need data shape validation: does the shape of the datasource conflict with the input/output combination of shapes of processors?
 
