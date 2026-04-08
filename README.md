@@ -13,6 +13,8 @@ The central repository. It doesn't just list URLs; it stores SHACL "Contracts" f
 
 Datasets linked with shapes via dcterms:conformsTo (other options are possible according to [the specification](https://dishacled.github.io/discovery-specification/), does not matter if the discovery algorithm is used):
 
+- [ ] Update https://dishacled-api.azurewebsites.net/api/v1/catalog with the services and shapes of datasets and services
+
 ```
 :dishacled-catalogue
   a dcat:Catalog;
