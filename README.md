@@ -501,6 +501,7 @@ Acting as a "click-and-connect" interface, this component allows users to inspec
 - [ ] We have a shape construction algorithm for datasets but not for pipeline components/services (see below). We assume that every pipeline component needs its own strategy to generate input/output shapes.
 - [ ] Currently, the focus of the pipeline generator and specification lies in the description of the configuration parameters of a pipeline component, so it can be listed in a user interface (Elody, SHACL UI...). We suggest to also include pipeline steps (with config and input/output shape of the pipeline component) in the catalogue, so extra reusability of pipeline steps and validation can be achieved.
 - [ ] For validating the demonstrator that the pipeline breaks when the unit of the source changes: the threshold monitoring processor have value and unit configuration parameters. When a pipeline step with the threshold monitoring processor is configured, then an input shape can be generated. When the source shape changes, this should create a validation error. However, what if LDIO changes the shape or when we don't have input/output shapes of processors? Will we send a sample through the pipeline to validate?
+- [ ] Idea for Semantic.works: extend Delta notifier with SHACL support
 
 However, the demonstrator describes a use case where we need data shape validation: does the shape of the datasource conflict with the input/output combination of shapes of processors?
 
