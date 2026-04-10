@@ -158,7 +158,7 @@ rdfc:Orchestrator a tc:PipelineComponent ;
 :loketErrorAlertProcessor a :PipelineComponent ;
   osw:hasDependency :loketErrorAlertService .
 
-:loketErrorAlertService a :PipelineComponent, mu:Microservice, dcat:Dataset ;
+:loketErrorAlertService a :PipelineComponent, mu:Microservice, dcat:Service ;
   rdfs:label "Service that is responsible for sending out alerts when errors are inserted in the store. Build using the MU Javascript template.";
   dcat:accessUrl <https://github.com/lblod/loket-error-alert-service> ;
   dcterms:conformsTo :loketErrorAlertServiceShape .
@@ -504,16 +504,62 @@ Acting as a "click-and-connect" interface, this component allows users to inspec
 - [ ] Idea for Semantic.works: extend Delta notifier with SHACL support
 
 However, the demonstrator describes a use case where we need data shape validation: does the shape of the datasource conflict with the input/output combination of shapes of processors?
-
 The :PipelineComponents described above are generic descriptions where the config is not materialized yet. A shape is provided for validating the config in a later stage.
 
+Below, I will give some examples how the data shape approach looks for the different frameworks.
 For Semantic Works service, the approach is focusing on the description of input/output data shapes: https://github.com/DiSHACLed/discovery-specification/blob/main/20250422142901-describing_microservices.md
-Below, I will give some examples how the data shape approach looks on the ldio and rdf connect services:
 
 ```
-:loketErrorAlertProcessor 
+:dishacled-catalogue dcat:service :reusableLoketErrorAlertProcessor .
+
+:reusableLoketErrorAlertProcessor a :PipelineStep ;
+  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+  dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole :inputShape ;
+        dcterms:relation :errorShape
+    ];
+  dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole :outputShape ;
+        dcterms:relation :MailShape
+    ] .
+
+:errorShape a sh:NodeShape ;
+  sh:targetClass oslc:Error ;
+  sh:property [
+      sh:path dct:subject ;
+      sh:datatype xsd:string ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+  ] ;
+  sh:property [
+      sh:path oslc:message ;
+      sh:datatype xsd:string ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+  ] .
+
+:mailShape a sh:NodeShape ;
+  sh:targetClass nmo:Email ;
+  sh:property [
+      sh:name "folder" ;
+      sh:path nmo:isPartOf ;
+      sh:nodeKind sh:IRI ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+  ] ;
+  sh:property [
+      sh:path nmo:messageFrom  ;
+      sh:datatype xsd:string ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+  ] ;
+  sh:property [
+      sh:path nmo:messageTo  ;
+      sh:datatype xsd:string ;
+      sh:minCount 1 ;
+      sh:maxCount 1 ;
+  ] .
 ```
 
-## Example of instance pipeline component
-
-For example, SSN/SOSA input -> LDES member SPARQL construct transformer
