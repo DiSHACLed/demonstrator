@@ -358,8 +358,8 @@ A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor obs
 The config of the LDIO HttpInPoller will have a semantic description in the pipeline definition:
 
 ```
-:demodioHttpInPoller a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioHttpInPoller ;
+:demodioHttpInPoller a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioHttpInPoller ;
   p-plan:hasInputVar [
         a tcs:Config;
         tcs:embedded
@@ -375,8 +375,8 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 #### SPARQL CONSTRUCT transformer
 
 ```
-:demoLdioSparqlConstructTransformer a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioSparqlConstructTransformer ;
+:demoLdioSparqlConstructTransformer a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioSparqlConstructTransformer ;
   p-plan:hasInputVar [
         a tcs:Config;
         tcs:embedded
@@ -401,8 +401,8 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 #### HTTP Out
 
 ```
-:demoLdioHttpOut a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioHttpOut ;
+:demoLdioHttpOut a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioHttpOut ;
   p-plan:hasInputVar [
         a tcs:Config;
         tcs:embedded
@@ -417,8 +417,8 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates an Error message.
 
 ```
-:demoThresholdMonitoringProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor rdfc:thresholdMonitoringProcessor ;
+:demoThresholdMonitoringProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf rdfc:thresholdMonitoringProcessor ;
   p-plan:hasInputVar [
     a tcs:Config;
     tcs:embedded
@@ -434,8 +434,8 @@ Performs continuous threshold monitoring on the LDES stream. If a value exceeds 
 The Error message must be inserted in a triple store in order that the Semantic Works service can further process.
 
 ```
-:demoThresholdMonitoringProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor rdfc:SPARQLIngest ;
+:demoThresholdMonitoringProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf rdfc:SPARQLIngest ;
   p-plan:hasInputVar [
     a tcs:Config;
     tcs:embedded
@@ -457,8 +457,8 @@ In practice, the lblod/loket-error-alert-service gets triggered by the Error whe
 Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
 
 ```
-:demoLoketErrorAlertProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+:demoLoketErrorAlertProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf :loketErrorAlertService ;
   p-plan:hasInputVar [
     a tcs:Config;
     tcs:embedded
@@ -488,8 +488,8 @@ Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
     """ .
   ] .
 
-:demoDeliverEmailProcessor: a :PipelineStep ;
-  :toBeCarriedOutByProcessor :deliverEmailService: ;
+:demoDeliverEmailProcessor: a tcs:InstancePipelineComponent ;
+  prov:specializationOf :deliverEmailService: ;
   p-plan:hasInputVar [
     a tcs:Config;
     tcs:embedded
@@ -530,8 +530,8 @@ For Semantic Works service, the approach is focusing on the description of input
 ```
 :dishacled-catalogue dcat:service :reusableLoketErrorAlertProcessor .
 
-:reusableLoketErrorAlertProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+:reusableLoketErrorAlertProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf :loketErrorAlertService ;
   dcat:qualifiedRelation [
         a dcat:Relationship;
         dcat:hadRole :inputShape ;
