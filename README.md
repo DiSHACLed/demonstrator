@@ -7,6 +7,24 @@ Sensor → Data Catalog → Data Platform → Algorithm → Alerting → Dashboa
 
 ## Components
 
+Prefixes used throughout this document:
+
+```
+@prefix : <http://example.org/> .
+@prefix tcs: <https://w3id.org/tcs#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix rdfc: <https://w3id.org/rdf-connect#> .
+@prefix mu: <http://mu.semte.ch/vocabularies/core/> .
+@prefix schema: <https://schema.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+```
+
 ### The Catalog
 
 The central repository. It doesn't just list URLs; it stores SHACL "Contracts" for every component. These define what a dataset holds or what a service requires (e.g., "I require a water-level input in CM"). Can be used to find the dataset(s) & services via search.
@@ -50,7 +68,7 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
     ] .
 
 # Generic processor / pipeline components where config still needs to be configured
-:ldioHttpInPoller a :PipelineComponent ;
+:ldioHttpInPoller a tcs:PipelineComponent ;
   dcat:qualifiedRelation [
         a dcat:Relationship;
         dcat:hadRole :configShape ;
@@ -64,14 +82,14 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tc:toBeCarriedOutByComponent :ldioHttpInPoller .
+                        ?step prov:specializationOf :ldioHttpInPoller .
                         ?step p-plan:hasInputVar ?this .
-                        ?this a tc:Config .
+                        ?this a tcs:Config .
                         }
                   """ ;
               ] ;
         sh:property [
-            sh:path tc:embedded ;
+            sh:path tcs:embedded ;
             sh:node [
                 a sh:NodeShape ;
                 sh:property [
@@ -91,13 +109,13 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
         ] .
 
 # This deviates from how RDF Connect currently describe processors
-:thresholdMonitoringProcessor a :PipelineComponent , rdfc:ThresholdMonitoringProcessor ;
+:thresholdMonitoringProcessor a tcs:PipelineComponent , rdfc:ThresholdMonitoringProcessor ;
   dcat:qualifiedRelation [
           a dcat:Relationship;
           dcat:hadRole :configShape ;
           dcterms:relation :thresholdMonitoringProcessorShape .
       ] ;
-  osw:hasDependency rdfc:NodeRunner .
+  dct:requires rdfc:NodeRunner .
 
 :thresholdMonitoringProcessorShape a sh:NodeShape ;
   sh:target [
@@ -106,14 +124,14 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tc:toBeCarriedOutByComponent :thresholdMonitoringProcessor .
+                        ?step prov:specializationOf :thresholdMonitoringProcessor .
                         ?step p-plan:hasInputVar ?this .
-                        ?this a tc:Config .
+                        ?this a tcs:Config .
                         }
                   """ ;
               ] ;
         sh:property [
-            sh:path tc:embedded ;
+            sh:path tcs:embedded ;
             sh:node [
                 a sh:NodeShape ;
                 sh:property [
@@ -132,16 +150,16 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             ] ;
         ] .
 
-rdfc:NodeRunner a tc:PipelineComponent;
+rdfc:NodeRunner a tcs:PipelineComponent;
     rdfs:label "Javascript Node Runner" ; 
-    osw:hasDependency rdfc:Orchestrator ;
+    dct:requires rdfc:Orchestrator ;
     dcterms:conformsTo :NodeRunnerConfigShape .
  
-rdfc:Orchestrator a tc:PipelineComponent ;
+rdfc:Orchestrator a tcs:PipelineComponent ;
     rdfs:label "RDF Connect Orchestrator" ;
-    tc:hasDefaultConfig [
-        a tc:Config, tc:MicroServiceConfig ;
-        tc:literal """
+    tcs:hasDefaultConfig [
+        a tcs:Config, tcs:MicroServiceConfig ;
+        tcs:literal """
   rdf-connect:
     container_name: rdf-connect
     image: rdf-connect:latest
@@ -156,7 +174,7 @@ rdfc:Orchestrator a tc:PipelineComponent ;
 
 # The processors of Semantic.Workshave shapes for input / output data as described [here](https://github.com/DiSHACLed/discovery-specification/blob/main/20250422142901-describing_microservices.md), see below this document
 :loketErrorAlertProcessor a :PipelineComponent ;
-  osw:hasDependency :loketErrorAlertService .
+  dct:requires :loketErrorAlertService .
 
 :loketErrorAlertService a :PipelineComponent, mu:Microservice, dcat:Service ;
   rdfs:label "Service that is responsible for sending out alerts when errors are inserted in the store. Build using the MU Javascript template.";
@@ -170,14 +188,14 @@ rdfc:Orchestrator a tc:PipelineComponent ;
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tc:toBeCarriedOutByComponent :loketErrorAlertService .
+                        ?step prov:specializationOf :loketErrorAlertService .
                         ?step p-plan:hasInputVar ?this .
-                        ?this a tc:Config .
+                        ?this a tcs:Config .
                         }
                   """ ;
               ] ;
         sh:property [
-            sh:path tc:embedded ;
+            sh:path tcs:embedded ;
             sh:node [
                 a sh:NodeShape ;
                 # TODO
@@ -340,11 +358,11 @@ A `prov:generatedAtTime` and `dct:isVersionOf` is added to enrich the sensor obs
 The config of the LDIO HttpInPoller will have a semantic description in the pipeline definition:
 
 ```
-:demodioHttpInPoller a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioHttpInPoller ;
+:demodioHttpInPoller a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioHttpInPoller ;
   p-plan:hasInputVar [
-        a tc:Config;
-        tc:embedded
+        a tcs:Config;
+        tcs:embedded
         [
           :url "http://path-to-mock-api"
         ],
@@ -357,11 +375,11 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 #### SPARQL CONSTRUCT transformer
 
 ```
-:demoLdioSparqlConstructTransformer a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioSparqlConstructTransformer ;
+:demoLdioSparqlConstructTransformer a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioSparqlConstructTransformer ;
   p-plan:hasInputVar [
-        a tc:Config;
-        tc:embedded
+        a tcs:Config;
+        tcs:embedded
         [
           :query """
             PREFIX dct: <http://purl.org/dc/terms/> .
@@ -383,11 +401,11 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 #### HTTP Out
 
 ```
-:demoLdioHttpOut a :PipelineStep ;
-  :toBeCarriedOutByProcessor :ldioHttpOut ;
+:demoLdioHttpOut a tcs:InstancePipelineComponent ;
+  prov:specializationOf :ldioHttpOut ;
   p-plan:hasInputVar [
-        a tc:Config;
-        tc:embedded
+        a tcs:Config;
+        tcs:embedded
         [
           :url "http://path-to-rdf-connect-channel"
         ]
@@ -399,11 +417,11 @@ The config of the LDIO HttpInPoller will have a semantic description in the pipe
 Performs continuous threshold monitoring on the LDES stream. If a value exceeds a limit (e.g., >7m), it generates an Error message.
 
 ```
-:demoThresholdMonitoringProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor rdfc:thresholdMonitoringProcessor ;
+:demoThresholdMonitoringProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf rdfc:thresholdMonitoringProcessor ;
   p-plan:hasInputVar [
-    a tc:Config;
-    tc:embedded
+    a tcs:Config;
+    tcs:embedded
     [
       :value "7"
       :unit <http://qudt.org/vocab/unit/CentiM>
@@ -416,11 +434,11 @@ Performs continuous threshold monitoring on the LDES stream. If a value exceeds 
 The Error message must be inserted in a triple store in order that the Semantic Works service can further process.
 
 ```
-:demoThresholdMonitoringProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor rdfc:SPARQLIngest ;
+:demoThresholdMonitoringProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf rdfc:SPARQLIngest ;
   p-plan:hasInputVar [
-    a tc:Config;
-    tc:embedded
+    a tcs:Config;
+    tcs:embedded
     [
       :memberStream <in> ;
       :ingestConfig [
@@ -439,16 +457,16 @@ In practice, the lblod/loket-error-alert-service gets triggered by the Error whe
 Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
 
 ```
-:demoLoketErrorAlertProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+:demoLoketErrorAlertProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf :loketErrorAlertService ;
   p-plan:hasInputVar [
-    a tc:Config;
-    tc:embedded
+    a tcs:Config;
+    tcs:embedded
     [
       :EMAIL_FROM "test@domain.net" ;
       :EMAIL_TO "test@domain.net,123@domain.com"
     ] ;
-    tc:literal """
+    tcs:literal """
       {
         // URI Base to be used at data creation.
         "base": "http://lblod.data.gift",
@@ -470,11 +488,11 @@ Then, the repencilio/deliver-email-service can be used to sent the e-mail(s).
     """ .
   ] .
 
-:demoDeliverEmailProcessor: a :PipelineStep ;
-  :toBeCarriedOutByProcessor :deliverEmailService: ;
+:demoDeliverEmailProcessor: a tcs:InstancePipelineComponent ;
+  prov:specializationOf :deliverEmailService: ;
   p-plan:hasInputVar [
-    a tc:Config;
-    tc:embedded
+    a tcs:Config;
+    tcs:embedded
     [
       :MAILBOX_URI 'http://data.lblod.info/id/mailboxes/1'
     ]
@@ -512,8 +530,8 @@ For Semantic Works service, the approach is focusing on the description of input
 ```
 :dishacled-catalogue dcat:service :reusableLoketErrorAlertProcessor .
 
-:reusableLoketErrorAlertProcessor a :PipelineStep ;
-  :toBeCarriedOutByProcessor :loketErrorAlertService ;
+:reusableLoketErrorAlertProcessor a tcs:InstancePipelineComponent ;
+  prov:specializationOf :loketErrorAlertService ;
   dcat:qualifiedRelation [
         a dcat:Relationship;
         dcat:hadRole :inputShape ;
