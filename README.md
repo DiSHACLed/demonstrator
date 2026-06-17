@@ -22,6 +22,7 @@ Prefixes used throughout this document:
 @prefix mu: <http://mu.semte.ch/vocabularies/core/> .
 @prefix schema: <https://schema.org/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 ```
 
 ### The Catalog
@@ -81,7 +82,7 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tcs:toBeCarriedOutByComponent :ldioHttpInPoller .
+                        ?step prov:specializationOf :ldioHttpInPoller .
                         ?step p-plan:hasInputVar ?this .
                         ?this a tcs:Config .
                         }
@@ -123,7 +124,7 @@ Datasets linked with shapes via dcterms:conformsTo (other options are possible a
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tcs:toBeCarriedOutByComponent :thresholdMonitoringProcessor .
+                        ?step prov:specializationOf :thresholdMonitoringProcessor .
                         ?step p-plan:hasInputVar ?this .
                         ?this a tcs:Config .
                         }
@@ -187,7 +188,7 @@ rdfc:Orchestrator a tcs:PipelineComponent ;
             sh:select """
                     SELECT ?this
                     WHERE {
-                        ?step tcs:toBeCarriedOutByComponent :loketErrorAlertService .
+                        ?step prov:specializationOf :loketErrorAlertService .
                         ?step p-plan:hasInputVar ?this .
                         ?this a tcs:Config .
                         }
