@@ -1,0 +1,143 @@
+@prefix rdfc: <https://w3id.org/rdf-connect#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix schema: <https://schema.org/>.
+@prefix tm: <https://w3id.org/rdf-connect/threshold-monitor#>.
+@prefix oslc: <http://open-services.net/ns/core#>.
+@prefix ex: <http://dishacled.example.org/>.
+@prefix proc: <http://dishacled.example.org/processors#>.
+
+### Import runners and processors
+<> owl:imports <./node_modules/@rdfc/js-runner/index.ttl>,
+  <./node_modules/@rdfc/http-utils-processor-ts/processors.ttl>,
+  <./node_modules/@rdfc/sds-processors-ts/configs/sdsify.ttl>,
+  <./node_modules/@rdfc/threshold-monitor-processor-ts/processor.ttl>,
+  <./node_modules/@rdfc/sparql-ingest-processor-ts/processors.ttl>,
+  <./node_modules/@rdfc/log-processor-ts/processor.ttl>,
+  <./node_modules/@rdfc/skolemization-processor-ts/processor.ttl>,
+  <./processors/jsonld-to-nquads/processor.ttl>.
+
+### Pipeline: HttpServer -> JSON-LD parse -> Sdsify -> ThresholdMonitor -> Sdsify -> SPARQLIngest
+<> a rdfc:Pipeline;
+  rdfc:consistsOf [
+    rdfc:instantiates rdfc:NodeRunner;
+    rdfc:processor ex:HttpServerIn,
+      ex:JsonLdConvert,
+      ex:SdsifyMeasurements,
+      ex:ThresholdMonitor,
+      ex:SkolemizeViolations,
+      ex:SdsifyViolations,
+      ex:SparqlIngest,
+      ex:LogMeasurementsMeta,
+      ex:LogViolationsMeta;
+  ].
+
+### Channels
+ex:rawJson a rdfc:Reader, rdfc:Writer.
+
+ex:rdf a rdfc:Reader, rdfc:Writer.
+ex:sdsMeasurements a rdfc:Reader, rdfc:Writer.
+ex:sdsMeasurementsMeta a rdfc:Reader, rdfc:Writer.
+ex:violations a rdfc:Reader, rdfc:Writer.
+ex:violationsSkolemized a rdfc:Reader, rdfc:Writer.
+ex:sdsViolations a rdfc:Reader, rdfc:Writer.
+ex:sdsViolationsMeta a rdfc:Reader, rdfc:Writer.
+### 1. HTTP source
+### Disabled for now: pulling source-a's "current" reading on a schedule.
+# ex:HttpIn a rdfc:HttpFetch;
+#     rdfc:url "https://dishacled-api.azurewebsites.net/api/v1/source-a/current";
+#     rdfc:writer ex:rawJson;
+#     rdfc:options [
+#         rdfc:method "GET";
+#         rdfc:cron "*/10 * * * * *";
+#         rdfc:runOnInit true;
+#         rdfc:closeOnEnd false;
+#         rdfc:errorsAreFatal false
+#     ];
+#     rdfs:label "source-a HTTP poller".
+### Active source: accept posted JSON-LD measurements directly instead.
+ex:HttpServerIn a rdfc:HttpServer;
+  rdfc:port 9000;
+  rdfc:writer ex:rawJson;
+  rdfc:options [
+    rdfc:method "POST";
+    rdfc:path "/source-a";
+    rdfc:successStatusCode 202;
+  ];
+  rdfs:label "source-a HTTP ingest endpoint".
+
+### 2. The endpoint only ever serves JSON-LD; parse it into RDF for the SDS tooling below
+ex:JsonLdConvert a proc:JsonLdToNQuads;
+  rdfc:reader ex:rawJson;
+  rdfc:writer ex:rdf.
+
+### 3. Wrap each schema:PropertyValue measurement as an SDS record
+ex:SdsifyMeasurements a rdfc:Sdsify;
+  rdfc:input ex:rdf;
+  rdfc:output ex:sdsMeasurements;
+  rdfc:metadataOutput ex:sdsMeasurementsMeta;
+  rdfc:metadataConfig [
+    rdfc:streamId ex:measurementsStream;
+    rdfc:description "SDS stream of schema:PropertyValue water level measurements from source-a";
+  ];
+  rdfc:typeFilter schema:PropertyValue.
+
+### 4. Watch schema:value on each SDS member for out-of-range readings
+# NOTE: min/max are demo placeholders (in cm, per source-a's unitCode "CMT") - replace with the
+# real alarm thresholds for this water level sensor before relying on this for anything but a demo.
+ex:ThresholdMonitor a tm:ThresholdMonitorJs;
+  rdfc:reader ex:sdsMeasurements;
+  rdfc:writer ex:violations;
+  tm:path schema:value;
+  tm:min "0.0"^^xsd:double;
+  tm:max "300.0"^^xsd:double;
+  tm:stream ex:measurementsStream;
+  tm:creator ex:thresholdMonitorAgent;
+  rdfs:label "source-a water level threshold monitor".
+
+### 5. Sdsify only extracts members rooted at a NamedNode subject, but ThresholdMonitor's
+### oslc:Error alerts are written with a blank-node subject - skolemize it into a named
+### node (and rewrite all references to it) before handing it to Sdsify below.
+ex:SkolemizeViolations a rdfc:SkolemizationProcessor;
+  rdfc:incoming ex:violations;
+  rdfc:outgoing ex:violationsSkolemized;
+  rdfc:mime "text/turtle".
+
+### 6. Wrap each generated oslc:Error violation as an SDS record before ingestion
+ex:SdsifyViolations a rdfc:Sdsify;
+  rdfc:input ex:violationsSkolemized;
+  rdfc:output ex:sdsViolations;
+  rdfc:metadataOutput ex:sdsViolationsMeta;
+  rdfc:metadataConfig [
+    rdfc:streamId ex:violationsStream;
+    rdfc:description "SDS stream of threshold-violation alerts for source-a";
+  ];
+  rdfc:typeFilter oslc:Error.
+
+### Sdsify's metadataOutput channels are mandatory but unused by this pipeline;
+### drain them into the log at debug level instead of leaving them unread.
+ex:LogMeasurementsMeta a rdfc:LogProcessorJs;
+  rdfc:reader ex:sdsMeasurementsMeta;
+  rdfc:level "debug";
+  rdfc:label "sds-measurements-metadata".
+
+ex:LogViolationsMeta a rdfc:LogProcessorJs;
+  rdfc:reader ex:sdsViolationsMeta;
+  rdfc:level "debug";
+  rdfc:label "sds-violations-metadata".
+
+### 7. Ingest violations into the Virtuoso SPARQL store
+ex:SparqlIngest a rdfc:SPARQLIngest;
+  rdfc:memberStream ex:sdsViolations;
+  rdfc:ingestConfig [
+    rdfc:operationMode "Replication";
+    # Default batch size is 100 and only flushes early when the input channel closes,
+    # which never happens in this long-running server pipeline - each violation is rare
+    # and important, so push it to the store immediately instead of buffering it in memory.
+    rdfc:memberBatchSize 1;
+    rdfc:targetNamedGraph "http://dishacled.example.org/graphs/violations";
+    rdfc:graphStoreUrl "http://virtuoso:8890/sparql-graph-crud";
+    rdfc:forVirtuoso true;
+  ].
+

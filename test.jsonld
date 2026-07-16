@@ -1,0 +1,68 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "measuredAt": "sosa:resultTime",
+    "conformsTo": "dcterms:conformsTo",
+    "source": "https://schema.org/source"
+  },
+  "@type": "PropertyValue",
+  "@id": "urn:measurement:source-a:2026-07-16T14:52:45.038021+00:00",
+  "name": "Water Level - Source A",
+  "value": 1573.93,
+  "unitCode": "CMT",
+  "measuredAt": "2026-07-16T14:52:45.038021+00:00",
+  "source": "Source A",
+  "location": {
+    "@type": "Place",
+    "name": "Antwerp Water Monitoring Station",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 51.222278,
+      "longitude": 4.396
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Antwerp",
+      "addressRegion": "Flanders",
+      "addressCountry": "BE"
+    },
+    "conformsTo": [
+      {
+        "@type": "Standard",
+        "@id": "https://www.iso.org/standard/53798.html",
+        "name": "ISO 19115-1:2014 Geographic information - Metadata"
+      },
+      {
+        "@type": "Standard",
+        "@id": "https://www.iso.org/standard/32579.html",
+        "name": "ISO/TS 19139:2007 Geographic information - Metadata - XML schema implementation"
+      },
+      {
+        "@type": "Standard",
+        "@id": "http://inspire.ec.europa.eu/id/citation/ir/reg-1089-2010",
+        "name": "Commission Regulation (EU) No 1089/2010 (Interoperability of spatial data sets and services)",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Standard",
+        "@id": "http://inspire.ec.europa.eu/theme/hy",
+        "name": "INSPIRE Data Specification on Hydrography",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Standard",
+        "@id": "https://www.iso.org/standard/72004.html",
+        "name": "ISO 748: Hydrometry - Measurement of liquid flow in open channels",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Standard",
+        "@id": "https://www.iso.org/standard/44361.html",
+        "name": "ISO 1100: Hydrometry - Measurement of liquid flow in open channels (Stage-discharge relation)",
+        "inLanguage": "en"
+      }
+    ]
+  }
+}
