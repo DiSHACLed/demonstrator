@@ -8,5 +8,17 @@ services:
       # - virtuoso
     # restart: unless-stopped
 
+  ldio-workbench:
+    image: ldes/ldi-orchestrator:2.13.0
+    container_name: ldio-workbench
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./LDIO/application.yml:/ldio/application.yml:ro
+      - ./LDIO/pipelines:/ldio/pipelines:ro
+    depends_on:
+      - rdfc
+    # restart: unless-stopped
+
 # volumes:
   # virtuoso-data:

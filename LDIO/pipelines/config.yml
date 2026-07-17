@@ -1,0 +1,105 @@
+name: dishacled-source-a
+description: >
+  Polls the DiSHACLed source-a water-level API every 10 seconds and enriches each
+  schema:PropertyValue measurement into an ssn:sosa observation before forwarding
+  it as JSON-LD to the RDF-Connect ingest endpoint at http://rdfc:9000/source-a.
+
+input:
+  name: Ldio:HttpInPoller
+  adapter:
+    name: Ldio:JsonToLdAdapter
+    # The API serves JSON-LD but advertises `Content-Type: application/json`, which
+    # `Ldio:RdfAdapter` refuses ("Failed to determine the RDF syntax"). `Ldio:JsonToLdAdapter`
+    # accepts any content-type when `force-content-type: true` and re-applies the JSON-LD
+    # context we supply below — an exact copy of the one the API embeds inline, so no
+    # terms are lost during expansion.
+    config:
+      force-content-type: true
+      context: |
+        {
+          "@context": {
+            "@vocab": "https://schema.org/",
+            "sosa": "http://www.w3.org/ns/sosa/",
+            "dcterms": "http://purl.org/dc/terms/",
+            "measuredAt": "sosa:resultTime",
+            "conformsTo": "dcterms:conformsTo",
+            "source": "https://schema.org/source"
+          }
+        }
+  config:
+    url: https://dishacled-api.azurewebsites.net/api/v1/source-a/current
+    cron: "*/10 * * * * *"
+
+transformers:
+  - name: Ldio:SparqlConstructTransformer
+    config:
+      query: |
+        PREFIX schema: <https://schema.org/>
+        PREFIX sosa:   <http://www.w3.org/ns/sosa/>
+        PREFIX qudt:   <http://qudt.org/schema/qudt/>
+        PREFIX unit:   <http://qudt.org/vocab/unit/>
+        PREFIX dct:    <http://purl.org/dc/terms/>
+        PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+        PREFIX ex:     <http://dishacled.example.org/>
+
+        CONSTRUCT {
+          ?obs a sosa:Observation ;
+               sosa:madeBySensor         ?sensor ;
+               sosa:observedProperty     ?prop ;
+               sosa:hasFeatureOfInterest ?place ;
+               sosa:resultTime           ?time ;
+               sosa:hasSimpleResult      ?value ;
+               sosa:hasResult            ?result ;
+               rdfs:label                ?obsName ;
+               dct:conformsTo            ?std .
+
+          ?result a qudt:QuantityValue ;
+                  qudt:numericValue ?value ;
+                  qudt:unit         ?unit .
+
+          ?sensor a sosa:Sensor ;
+                  rdfs:label ?source .
+
+          ?prop a sosa:ObservableProperty ;
+                rdfs:label "Water level" .
+
+          ?place a sosa:FeatureOfInterest, schema:Place ;
+                 schema:name    ?placeName ;
+                 schema:geo     ?geo ;
+                 schema:address ?addr .
+
+          ?geo  ?geoP  ?geoV .
+          ?addr ?addrP ?addrV .
+        }
+        WHERE {
+          ?obs a schema:PropertyValue ;
+               schema:name     ?obsName ;
+               schema:value    ?value ;
+               schema:unitCode ?unitCode ;
+               sosa:resultTime ?time ;
+               schema:source   ?source ;
+               schema:location ?place .
+
+          ?place schema:name ?placeName .
+          OPTIONAL { ?place schema:geo     ?geo  . ?geo  ?geoP  ?geoV }
+          OPTIONAL { ?place schema:address ?addr . ?addr ?addrP ?addrV }
+          OPTIONAL { ?obs   dct:conformsTo ?std }
+
+          VALUES (?unitCode ?unit) {
+            ("CMT" <http://qudt.org/vocab/unit/CentiM>)
+          }
+
+          BIND(<http://dishacled.example.org/sensor/source-a>     AS ?sensor)
+          BIND(<http://dishacled.example.org/property/waterLevel> AS ?prop)
+          # Deterministic IRI (not a fresh BNODE per row) so multiple OPTIONAL
+          # bindings in WHERE don't fan out into duplicate qudt:QuantityValue nodes.
+          BIND(IRI(CONCAT(STR(?obs), "/result"))                  AS ?result)
+        }
+
+outputs:
+  - name: Ldio:HttpOut
+    config:
+      endpoint: http://rdfc:9000/source-a
+      rdf-writer:
+        content-type: application/ld+json

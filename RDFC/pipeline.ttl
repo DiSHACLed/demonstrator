@@ -3,6 +3,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix schema: <https://schema.org/>.
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
 @prefix tm: <https://w3id.org/rdf-connect/threshold-monitor#>.
 @prefix oslc: <http://open-services.net/ns/core#>.
 @prefix ex: <http://dishacled.example.org/>.
@@ -72,24 +73,27 @@ ex:JsonLdConvert a proc:JsonLdToNQuads;
   rdfc:reader ex:rawJson;
   rdfc:writer ex:rdf.
 
-### 3. Wrap each schema:PropertyValue measurement as an SDS record
+### 3. Wrap each sosa:Observation measurement as an SDS record
+### (The upstream LDIO workbench enriches source-a's schema:PropertyValue payloads
+### into sosa:Observations before POSTing them here.)
 ex:SdsifyMeasurements a rdfc:Sdsify;
   rdfc:input ex:rdf;
   rdfc:output ex:sdsMeasurements;
   rdfc:metadataOutput ex:sdsMeasurementsMeta;
   rdfc:metadataConfig [
     rdfc:streamId ex:measurementsStream;
-    rdfc:description "SDS stream of schema:PropertyValue water level measurements from source-a";
+    rdfc:description "SDS stream of sosa:Observation water level measurements from source-a";
   ];
-  rdfc:typeFilter schema:PropertyValue.
+  rdfc:typeFilter sosa:Observation.
 
-### 4. Watch schema:value on each SDS member for out-of-range readings
-# NOTE: min/max are demo placeholders (in cm, per source-a's unitCode "CMT") - replace with the
-# real alarm thresholds for this water level sensor before relying on this for anything but a demo.
+### 4. Watch sosa:hasSimpleResult on each SDS member for out-of-range readings
+# NOTE: min/max are demo placeholders (in cm, matching the LDIO-enriched qudt:unit unit:CentiM) -
+# replace with the real alarm thresholds for this water level sensor before relying on this for
+# anything but a demo.
 ex:ThresholdMonitor a tm:ThresholdMonitorJs;
   rdfc:reader ex:sdsMeasurements;
   rdfc:writer ex:violations;
-  tm:path schema:value;
+  tm:path sosa:hasSimpleResult;
   tm:min "0.0"^^xsd:double;
   tm:max "300.0"^^xsd:double;
   tm:stream ex:measurementsStream;
