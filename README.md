@@ -1,34 +1,78 @@
 # demonstrator
 
-For the demonstrator we manually set up a target pipeline, which gives us a concrete goal the [pipeline generator](https://github.com/thcarsten/toolchain-specification/tree/main/pipeline%20generator) should compile to. 
+For the demonstrator we manually set up a target pipeline, which gives us a concrete goal the [pipeline generator](https://github.com/thcarsten/toolchain-specification/tree/main/pipeline%20generator) should compile to.
 The scenario is the following: Our pipeline receives water levels from an [API-endpoint](https://dishacled-frontend.azurewebsites.net/). This data is enriched with the [LDIO workbench](https://openldes.org/) and forwarded to [RDF-Connect](https://rdf-connect.github.io/). In RDF-Connect, water levels are continuously checked against a fixed threshold, to detect flooding. In case of flooding, RDF-Connect forwards this information to [semantic.works](https://abb-vlaanderen.gitbook.io/abb/development/architecture/semantic-works-application-framework)-components. It does so by inserting triples to a triple store. An error-alert service is triggered by this placement of triples, causing an email to be send out to emergency services.
+
 Concretely, the pipeline pipes data through the following components:
 
-This api is the starting point: https://dishacled-frontend.azurewebsites.net/
+This API is the starting point: https://dishacled-api.azurewebsites.net/api/v1/source-a/current
 
-| Component | Purpose |
-| ----- | ----- |
-| ldio:HttpInPoller | Fetches data from the API |
-| ldio:RdfAdapter | Parses string to internal Linked Data representation |
-| ldio:SparqlConstructTransformer | Enriches the data (to be discussed) |
-| ldio:HttpOut | Sends data out via http |
-| rdfc:HttpIn | Receives data via http |
-| rdfc:thresholdMonitoringProcessor | Continuously checks flooding |
-| rdfc:SparqlIngest | Inserts triples to semantic.works triplestore to indicate flooding |
-| sw:loket-error-alert-service | Is alerted by flooding and creates email |
-| sw:deliver-email-service | Sends out email to emergency services |
+| Framework | Component | Purpose |
+| --- | --- | --- |
+| **LDIO** | `Ldio:HttpInPoller` | Polls the source-a API every 10 s |
+| **LDIO** | `Ldio:JsonToLdAdapter` | Parses the response body as JSON-LD (needed because the API advertises `Content-Type: application/json`; `Ldio:RdfAdapter` would refuse it) |
+| **LDIO** | `Ldio:SparqlConstructTransformer` | Enriches each `schema:PropertyValue` measurement into an `sosa:Observation` with a `qudt:QuantityValue` result in `unit:CentiM` |
+| **LDIO** | `Ldio:HttpOut` | POSTs the enriched graph as `application/ld+json` to `http://rdfc:9000/source-a` |
+| **RDF-Connect** | `rdfc:HttpServer` | Receives the POST on `:9000/source-a` |
+| **RDF-Connect** | `proc:JsonLdToNQuads` | Local processor that converts the incoming JSON-LD to N-Quads |
+| **RDF-Connect** | `rdfc:Sdsify` (measurements) | Wraps each `sosa:Observation` as an SDS record |
+| **RDF-Connect** | `tm:ThresholdMonitorJs` | Watches `sosa:hasSimpleResult`; emits `oslc:Error` when a reading is out of the configured `[min, max]` range (currently `0` – `300` cm as a demo placeholder — real thresholds not yet configured) |
+| **RDF-Connect** | `rdfc:SkolemizationProcessor` | Turns the ThresholdMonitor's blank-node error subjects into named IRIs |
+| **RDF-Connect** | `rdfc:Sdsify` (violations) | Wraps each `oslc:Error` as an SDS record |
+| **RDF-Connect** | `rdfc:SPARQLIngest` | Pushes violation triples to the semantic.works store via `http://identifier/sparql` |
+| **semantic.works** | `mu-identifier` / `mu-dispatcher` / `mu-authorization` / Virtuoso `triplestore` | Standard mu-semtech stack; stores the incoming `oslc:Error` triples |
+| **semantic.works** | `mu-delta-notifier` | Notifies subscribers of triple-store changes |
+| **semantic.works** | `loket-error-alert-service` | Reacts to inserted `oslc:Error` triples and composes an HTML email as `nmo:Email` triples |
+| **semantic.works** | `berichtencentrum-deliver-email-service` | Polls its mail folder and sends outgoing emails over SMTP |
 
+## LDIO workbench details
 
-# commands
+See [`LDIO/README.md`](LDIO/README.md) for the workbench's pipeline definition, adapter choice, and layout of `application.yml` + `pipelines/config.yml`.
+
+## Running
+
+Bring the full three-framework stack up on a single shared docker network:
 
 ```
-docker compose \\ 
-    -f docker-compose.yml \\
-    -f docker-compose-sw.yml \\
-    -f docker-compose-sw.dev.yml \\
+docker compose \
+    -f docker-compose.yml \
+    -f docker-compose-sw.yml \
+    -f docker-compose-sw.dev.yml \
     up -d --build
 ```
 
+Useful endpoints (all bound to `localhost` via the `.dev.yml` overlay):
+
+- Virtuoso SPARQL endpoint: http://localhost:8890/sparql
+- mu-identifier (semantic.works front door): http://localhost:80
+- LDIO actuator: http://localhost:8080/actuator/health
+- RDF-Connect ingest port: `POST http://localhost:9000/source-a`
+
+Manual injection (bypasses LDIO, useful for debugging the RDFC → semantic.works link):
+
 ```
 curl -X POST localhost:9000/source-a -d@test.jsonld
+```
+
+## Verifying end-to-end
+
+Once the stack is up, wait ~30 seconds and check each hop:
+
+```
+# LDIO polling status
+docker compose logs ldio-workbench | Select-String "RUNNING|ERROR"
+
+# RDFC threshold + ingest activity
+docker compose logs rdfc | Select-String "Threshold violation|SparqlIngest"
+
+# oslc:Error triples in Virtuoso
+# (adjust body encoding for your shell)
+curl -s -H "Accept: application/sparql-results+json" \
+     --data-urlencode "query=SELECT (COUNT(*) AS ?n) WHERE { ?s a <http://open-services.net/ns/core#Error> }" \
+     http://localhost:8890/sparql
+
+# nmo:Email entities generated by the error-alert service
+curl -s -H "Accept: application/sparql-results+json" \
+     --data-urlencode "query=SELECT ?email ?to ?subject WHERE { ?email a <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#Email> ; <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> ?to ; <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageSubject> ?subject } LIMIT 5" \
+     http://localhost:8890/sparql
 ```
