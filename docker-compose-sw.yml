@@ -31,18 +31,6 @@ services:
       - "logging=true"
     logging: *default-logging
 
-  migrations:
-    image: semtech/mu-migrations-service:0.9.0
-    links:
-      - triplestore:database
-    environment:
-      MU_SPARQL_TIMEOUT: 600
-    volumes:
-      - ./semantic-works/config/migrations:/data/migrations
-    labels:
-      - "logging=true"
-    logging: *default-logging
-
   delta-notifier:
     image: semtech/mu-delta-notifier:0.4.0
     volumes:
@@ -64,9 +52,23 @@ services:
     image: redpencil/virtuoso:1.4.0
     environment:
       SPARQL_UPDATE: "true"
+      DEFAULT_GRAPH: "http://mu.semte.ch/graphs/public"
     volumes:
       - ./semantic-works/data/db:/data
       - ./semantic-works/config/virtuoso/virtuoso.ini:/data/virtuoso.ini
     labels:
       - "logging=true"
     logging: *default-logging
+
+  error-alert:
+    image: lblod/loket-error-alert-service:1.0.2
+    environment:
+      EMAIL_FROM: "mail@threshold-monitoring.com"
+      EMAIL_TO: "firefighers@antwerpen.be"
+      ERROR_TEMPLATE: "/mnt/templates/error.hbs"
+    volumes:
+      # - ./semantic-works/config/error-alert/:/config/
+      - ./semantic-works/config/error-alert/error.hbs:/mnt/templates/error.hbs:ro
+
+  berichtencentrum-deliver-email-service:
+    image: lblod/berichtencentrum-deliver-email-service

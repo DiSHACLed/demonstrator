@@ -131,13 +131,13 @@ ex:LogViolationsMeta a rdfc:LogProcessorJs;
 ex:SparqlIngest a rdfc:SPARQLIngest;
   rdfc:memberStream ex:sdsViolations;
   rdfc:ingestConfig [
-    rdfc:operationMode "Replication";
+    rdfc:operationMode "Sync";
     # Default batch size is 100 and only flushes early when the input channel closes,
     # which never happens in this long-running server pipeline - each violation is rare
     # and important, so push it to the store immediately instead of buffering it in memory.
     rdfc:memberBatchSize 1;
-    rdfc:targetNamedGraph "http://dishacled.example.org/graphs/violations";
-    rdfc:graphStoreUrl "http://virtuoso:8890/sparql-graph-crud";
+    rdfc:targetNamedGraph "http://mu.semte.ch/graphs/public";
+    rdfc:graphStoreUrl "http://identifier/sparql";
     rdfc:forVirtuoso true;
   ].
 

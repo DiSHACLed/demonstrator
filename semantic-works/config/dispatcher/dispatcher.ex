@@ -21,6 +21,11 @@ defmodule Dispatcher do
   # Run `docker-compose restart dispatcher` after updating
   # this file.
 
+  match "/sparql", @any do
+    Proxy.forward conn, [], "http://database:8890/"
+    # send_resp( conn, 404, "sparql route found." )
+  end
+
   match "/*_", %{ layer: :not_found } do
     send_resp( conn, 404, "Route not found.  See config/dispatcher.ex" )
   end

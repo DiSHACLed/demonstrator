@@ -1,24 +1,12 @@
 services:
-  virtuoso:
-    image: redpencil/virtuoso:1.4.0
-    environment:
-      SPARQL_UPDATE: "true"
-      DEFAULT_GRAPH: "http://dishacled.example.org/graphs/violations"
-    ports:
-      - "8890:8890"
-      - "1111:1111"
-    volumes:
-      - virtuoso-data:/data
-    restart: unless-stopped
-
   rdfc:
     build:
       context: ./RDFC
     ports:
       - "9000:9000"
-    depends_on:
-      - virtuoso
-    restart: unless-stopped
+    # depends_on:
+      # - virtuoso
+    # restart: unless-stopped
 
-volumes:
-  virtuoso-data:
+# volumes:
+  # virtuoso-data:

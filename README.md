@@ -17,3 +17,18 @@ This api is the starting point: https://dishacled-frontend.azurewebsites.net/
 | rdfc:SparqlIngest | Inserts triples to semantic.works triplestore to indicate flooding |
 | sw:loket-error-alert-service | Is alerted by flooding and creates email |
 | sw:deliver-email-service | Sends out email to emergency services |
+
+
+# commands
+
+```
+docker compose \\ 
+    -f docker-compose.yml \\
+    -f docker-compose-sw.yml \\
+    -f docker-compose-sw.dev.yml \\
+    up -d --build
+```
+
+```
+curl -X POST localhost:9000/source-a -d@test.jsonld
+```

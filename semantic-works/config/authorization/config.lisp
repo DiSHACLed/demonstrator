@@ -4,16 +4,16 @@
 
 ;; (push (make-instance 'delta-logging-handler) *delta-handlers*) ;; enable if delta messages should be logged on terminal
 (add-delta-messenger "http://delta-notifier/")
-(setf *log-delta-messenger-message-bus-processing* nil) ;; set to t for extra messages for debugging delta messenger
+(setf *log-delta-messenger-message-bus-processing* t) ;; set to t for extra messages for debugging delta messenger
 
 ;;;;;;;;;;;;;;;;;
 ;;; configuration
 (in-package :client)
-(setf *log-sparql-query-roundtrip* nil) ; change nil to t for logging requests to virtuoso (and the response)
+(setf *log-sparql-query-roundtrip* t) ; change nil to t for logging requests to virtuoso (and the response)
 (setf *backend* "http://triplestore:8890/sparql")
 
 (in-package :server)
-(setf *log-incoming-requests-p* nil) ; change nil to t for logging all incoming requests
+(setf *log-incoming-requests-p* t) ; change nil to t for logging all incoming requests
 
 ;;;;;;;;;;;;;;;;
 ;;; prefix types
