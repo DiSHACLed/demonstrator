@@ -1,0 +1,36 @@
+@prefix : <http://example.org/example/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix proc: <http://dishacled.example.org/processors#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfc: <https://w3id.org/rdf-connect#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix tcs: <https://w3id.org/toolchain#> .
+@prefix tm: <https://w3id.org/rdf-connect/threshold-monitor#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+#################################################################
+# RDF Connect Components
+#################################################################
+
+rdfc:SHACLProcessorTS a tcs:PipelineComponent, dcat:Resource;
+    rdfs:label "SHACL Processor TS";
+    dct:requires ... ;
+    dct:requires [
+        ...
+    ];
+    owl:imports ... ;
+    dcat:qualifiedRelation [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:configShape ;
+        dct:relation [
+            ...
+        ]
+    ];
+    # ! new here
+    dct:output rdfc:outgoing , # succeeding branch
+               rdfc:report . # failing branch

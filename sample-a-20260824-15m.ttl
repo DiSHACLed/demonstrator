@@ -1,0 +1,1110 @@
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex:      <http://www.example.org/> .
+@prefix schema:  <http://schema.org/> .
+@prefix sosa:    <http://www.w3.org/ns/sosa/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix qudt:    <http://qudt.org/schema/qudt/> .
+@prefix unit:    <http://qudt.org/vocab/unit/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+ex:obs001
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T00:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty001 .
+
+ex:qty001
+    a qudt:QuantityValue ;
+    qudt:numericValue "31.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs002
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T01:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty002 .
+
+ex:qty002
+    a qudt:QuantityValue ;
+    qudt:numericValue "1.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs003
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T02:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty003 .
+
+ex:qty003
+    a qudt:QuantityValue ;
+    qudt:numericValue "13.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs004
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T03:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty004 .
+
+ex:qty004
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs005
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T04:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty005 .
+
+ex:qty005
+    a qudt:QuantityValue ;
+    qudt:numericValue "35.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs006
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T05:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty006 .
+
+ex:qty006
+    a qudt:QuantityValue ;
+    qudt:numericValue "32.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs007
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T06:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty007 .
+
+ex:qty007
+    a qudt:QuantityValue ;
+    qudt:numericValue "43.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs008
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T07:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty008 .
+
+ex:qty008
+    a qudt:QuantityValue ;
+    qudt:numericValue "4.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs009
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T08:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty009 .
+
+ex:qty009
+    a qudt:QuantityValue ;
+    qudt:numericValue "20.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs010
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T09:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty010 .
+
+ex:qty010
+    a qudt:QuantityValue ;
+    qudt:numericValue "1.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs011
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T10:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty011 .
+
+ex:qty011
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs012
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T11:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty012 .
+
+ex:qty012
+    a qudt:QuantityValue ;
+    qudt:numericValue "24.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs013
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T12:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty013 .
+
+ex:qty013
+    a qudt:QuantityValue ;
+    qudt:numericValue "1.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs014
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T13:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty014 .
+
+ex:qty014
+    a qudt:QuantityValue ;
+    qudt:numericValue "9.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs015
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T14:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty015 .
+
+ex:qty015
+    a qudt:QuantityValue ;
+    qudt:numericValue "31.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs016
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T15:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty016 .
+
+ex:qty016
+    a qudt:QuantityValue ;
+    qudt:numericValue "26.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs017
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T16:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty017 .
+
+ex:qty017
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs018
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T17:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty018 .
+
+ex:qty018
+    a qudt:QuantityValue ;
+    qudt:numericValue "28.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs019
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T18:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty019 .
+
+ex:qty019
+    a qudt:QuantityValue ;
+    qudt:numericValue "39.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs020
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T19:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty020 .
+
+ex:qty020
+    a qudt:QuantityValue ;
+    qudt:numericValue "0.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs021
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T20:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty021 .
+
+ex:qty021
+    a qudt:QuantityValue ;
+    qudt:numericValue "39.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs022
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T21:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty022 .
+
+ex:qty022
+    a qudt:QuantityValue ;
+    qudt:numericValue "33.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs023
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T22:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty023 .
+
+ex:qty023
+    a qudt:QuantityValue ;
+    qudt:numericValue "16.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs024
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-01T23:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty024 .
+
+ex:qty024
+    a qudt:QuantityValue ;
+    qudt:numericValue "7.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs025
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T00:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty025 .
+
+ex:qty025
+    a qudt:QuantityValue ;
+    qudt:numericValue "46.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs026
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T01:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty026 .
+
+ex:qty026
+    a qudt:QuantityValue ;
+    qudt:numericValue "16.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs027
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T02:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty027 .
+
+ex:qty027
+    a qudt:QuantityValue ;
+    qudt:numericValue "4.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs028
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T03:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty028 .
+
+ex:qty028
+    a qudt:QuantityValue ;
+    qudt:numericValue "4.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs029
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T04:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty029 .
+
+ex:qty029
+    a qudt:QuantityValue ;
+    qudt:numericValue "41.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs030
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T05:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty030 .
+
+ex:qty030
+    a qudt:QuantityValue ;
+    qudt:numericValue "29.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs031
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T06:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty031 .
+
+ex:qty031
+    a qudt:QuantityValue ;
+    qudt:numericValue "39.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs032
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T07:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty032 .
+
+ex:qty032
+    a qudt:QuantityValue ;
+    qudt:numericValue "35.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs033
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T08:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty033 .
+
+ex:qty033
+    a qudt:QuantityValue ;
+    qudt:numericValue "26.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs034
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T09:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty034 .
+
+ex:qty034
+    a qudt:QuantityValue ;
+    qudt:numericValue "47.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs035
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T10:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty035 .
+
+ex:qty035
+    a qudt:QuantityValue ;
+    qudt:numericValue "18.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs036
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T11:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty036 .
+
+ex:qty036
+    a qudt:QuantityValue ;
+    qudt:numericValue "26.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs037
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T12:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty037 .
+
+ex:qty037
+    a qudt:QuantityValue ;
+    qudt:numericValue "40.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs038
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T13:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty038 .
+
+ex:qty038
+    a qudt:QuantityValue ;
+    qudt:numericValue "30.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs039
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T14:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty039 .
+
+ex:qty039
+    a qudt:QuantityValue ;
+    qudt:numericValue "41.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs040
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T15:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty040 .
+
+ex:qty040
+    a qudt:QuantityValue ;
+    qudt:numericValue "28.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs041
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T16:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty041 .
+
+ex:qty041
+    a qudt:QuantityValue ;
+    qudt:numericValue "34.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs042
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T17:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty042 .
+
+ex:qty042
+    a qudt:QuantityValue ;
+    qudt:numericValue "2.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs043
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T18:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty043 .
+
+ex:qty043
+    a qudt:QuantityValue ;
+    qudt:numericValue "11.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs044
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T19:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty044 .
+
+ex:qty044
+    a qudt:QuantityValue ;
+    qudt:numericValue "14.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs045
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T20:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty045 .
+
+ex:qty045
+    a qudt:QuantityValue ;
+    qudt:numericValue "3.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs046
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T21:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty046 .
+
+ex:qty046
+    a qudt:QuantityValue ;
+    qudt:numericValue "11.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs047
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T22:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty047 .
+
+ex:qty047
+    a qudt:QuantityValue ;
+    qudt:numericValue "4.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs048
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-02T23:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty048 .
+
+ex:qty048
+    a qudt:QuantityValue ;
+    qudt:numericValue "13.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs049
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T00:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty049 .
+
+ex:qty049
+    a qudt:QuantityValue ;
+    qudt:numericValue "30.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs050
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T01:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty050 .
+
+ex:qty050
+    a qudt:QuantityValue ;
+    qudt:numericValue "17.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs051
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T02:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty051 .
+
+ex:qty051
+    a qudt:QuantityValue ;
+    qudt:numericValue "18.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs052
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T03:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty052 .
+
+ex:qty052
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs053
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T04:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty053 .
+
+ex:qty053
+    a qudt:QuantityValue ;
+    qudt:numericValue "12.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs054
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T05:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty054 .
+
+ex:qty054
+    a qudt:QuantityValue ;
+    qudt:numericValue "45.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs055
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T06:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty055 .
+
+ex:qty055
+    a qudt:QuantityValue ;
+    qudt:numericValue "31.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs056
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T07:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty056 .
+
+ex:qty056
+    a qudt:QuantityValue ;
+    qudt:numericValue "29.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs057
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T08:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty057 .
+
+ex:qty057
+    a qudt:QuantityValue ;
+    qudt:numericValue "8.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs058
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T09:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty058 .
+
+ex:qty058
+    a qudt:QuantityValue ;
+    qudt:numericValue "35.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs059
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T10:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty059 .
+
+ex:qty059
+    a qudt:QuantityValue ;
+    qudt:numericValue "7.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs060
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T11:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty060 .
+
+ex:qty060
+    a qudt:QuantityValue ;
+    qudt:numericValue "18.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs061
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T12:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty061 .
+
+ex:qty061
+    a qudt:QuantityValue ;
+    qudt:numericValue "48.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs062
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T13:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty062 .
+
+ex:qty062
+    a qudt:QuantityValue ;
+    qudt:numericValue "31.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs063
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T14:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty063 .
+
+ex:qty063
+    a qudt:QuantityValue ;
+    qudt:numericValue "27.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs064
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T15:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty064 .
+
+ex:qty064
+    a qudt:QuantityValue ;
+    qudt:numericValue "33.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs065
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T16:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty065 .
+
+ex:qty065
+    a qudt:QuantityValue ;
+    qudt:numericValue "40.9"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs066
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T17:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty066 .
+
+ex:qty066
+    a qudt:QuantityValue ;
+    qudt:numericValue "37.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs067
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T18:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty067 .
+
+ex:qty067
+    a qudt:QuantityValue ;
+    qudt:numericValue "11.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs068
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T19:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty068 .
+
+ex:qty068
+    a qudt:QuantityValue ;
+    qudt:numericValue "1.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs069
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T20:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty069 .
+
+ex:qty069
+    a qudt:QuantityValue ;
+    qudt:numericValue "15.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs070
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T21:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty070 .
+
+ex:qty070
+    a qudt:QuantityValue ;
+    qudt:numericValue "13.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs071
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T22:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty071 .
+
+ex:qty071
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs072
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-03T23:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty072 .
+
+ex:qty072
+    a qudt:QuantityValue ;
+    qudt:numericValue "45.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs073
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T00:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty073 .
+
+ex:qty073
+    a qudt:QuantityValue ;
+    qudt:numericValue "42.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs074
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T01:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty074 .
+
+ex:qty074
+    a qudt:QuantityValue ;
+    qudt:numericValue "15.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs075
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T02:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty075 .
+
+ex:qty075
+    a qudt:QuantityValue ;
+    qudt:numericValue "31.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs076
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T03:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty076 .
+
+ex:qty076
+    a qudt:QuantityValue ;
+    qudt:numericValue "19.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs077
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T04:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty077 .
+
+ex:qty077
+    a qudt:QuantityValue ;
+    qudt:numericValue "44.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs078
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T05:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty078 .
+
+ex:qty078
+    a qudt:QuantityValue ;
+    qudt:numericValue "22.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs079
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T06:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty079 .
+
+ex:qty079
+    a qudt:QuantityValue ;
+    qudt:numericValue "12.8"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs080
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T07:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty080 .
+
+ex:qty080
+    a qudt:QuantityValue ;
+    qudt:numericValue "12.0"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs081
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T08:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty081 .
+
+ex:qty081
+    a qudt:QuantityValue ;
+    qudt:numericValue "27.2"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs082
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T09:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty082 .
+
+ex:qty082
+    a qudt:QuantityValue ;
+    qudt:numericValue "12.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs083
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T10:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty083 .
+
+ex:qty083
+    a qudt:QuantityValue ;
+    qudt:numericValue "28.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs084
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T11:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty084 .
+
+ex:qty084
+    a qudt:QuantityValue ;
+    qudt:numericValue "43.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs085
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T12:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty085 .
+
+ex:qty085
+    a qudt:QuantityValue ;
+    qudt:numericValue "19.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs086
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T13:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty086 .
+
+ex:qty086
+    a qudt:QuantityValue ;
+    qudt:numericValue "10.6"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs087
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T14:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty087 .
+
+ex:qty087
+    a qudt:QuantityValue ;
+    qudt:numericValue "48.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs088
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T15:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty088 .
+
+ex:qty088
+    a qudt:QuantityValue ;
+    qudt:numericValue "24.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs089
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T16:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty089 .
+
+ex:qty089
+    a qudt:QuantityValue ;
+    qudt:numericValue "4.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs090
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T17:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty090 .
+
+ex:qty090
+    a qudt:QuantityValue ;
+    qudt:numericValue "2.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs091
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T18:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty091 .
+
+ex:qty091
+    a qudt:QuantityValue ;
+    qudt:numericValue "5.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs092
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T19:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty092 .
+
+ex:qty092
+    a qudt:QuantityValue ;
+    qudt:numericValue "30.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs093
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T20:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty093 .
+
+ex:qty093
+    a qudt:QuantityValue ;
+    qudt:numericValue "38.4"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs094
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T21:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty094 .
+
+ex:qty094
+    a qudt:QuantityValue ;
+    qudt:numericValue "20.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs095
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T22:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty095 .
+
+ex:qty095
+    a qudt:QuantityValue ;
+    qudt:numericValue "3.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs096
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-04T23:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty096 .
+
+ex:qty096
+    a qudt:QuantityValue ;
+    qudt:numericValue "18.5"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs097
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-05T00:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty097 .
+
+ex:qty097
+    a qudt:QuantityValue ;
+    qudt:numericValue "48.3"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs098
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-05T01:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty098 .
+
+ex:qty098
+    a qudt:QuantityValue ;
+    qudt:numericValue "25.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs099
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-05T02:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty099 .
+
+ex:qty099
+    a qudt:QuantityValue ;
+    qudt:numericValue "47.1"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+
+ex:obs100
+    a sosa:Observation ;
+    sosa:madeBySensor ex:sensor1 ;
+    sosa:resultTime "2026-04-05T03:00:00"^^xsd:dateTime ;
+    sosa:hasResult ex:qty100 .
+
+ex:qty100
+    a qudt:QuantityValue ;
+    qudt:numericValue "41.7"^^xsd:decimal ;
+    qudt:unit unit:MilliM .
+

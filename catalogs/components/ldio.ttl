@@ -1,0 +1,62 @@
+@prefix : <http://example.org/example/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix ldio: <http://example.org/example/ldio/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix tcs: <https://w3id.org/toolchain#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ldio:HttpInPoller a tcs:PipelineComponent, dcat:Resource;
+    rdfs:label "Ldio:HttpInPoller" ; 
+    rdfs:description "The LDIO Http In Poller is a basic Http Poller that will poll a target URL on a specified interval.";
+    ldio:type "Input" ;
+    dcat:landingPage "https://informatievlaanderen.github.io/VSDS-Linked-Data-Interactions/2.8.0-SNAPSHOT/ldio/ldio-inputs/ldio-http-in-poller" ;
+    dct:requires ldio:LinkedDataInteractionsOrchestrator ;
+    dcat:qualifiedRelation [
+        a dcat:Relationship;
+        dcat:hadRole tcs:wrappedConfigShape ;
+        dct:relation [
+          a sh:NodeShape 
+          # checking that api has indeed json+ld as format...
+       ]
+       ],
+      [
+        a dcat:Relationship;
+        dcat:hadRole tcs:configShape ;
+        dct:relation [
+          a sh:NodeShape;
+          sh:node ldio:HttpRequesterShape;
+          sh:property [
+              sh:path ldio:url;
+              sh:name "url";
+              sh:description "Target URL to poll from.";
+              sh:datatype xsd:string;
+              sh:minCount 1; # Lists are supported
+          ], [
+            sh:path ldio:cron;
+            sh:name "cron";
+            sh:description "Cron expression to declare when the polling should take place. Schedules are in UTC timezone.";
+            sh:datatype xsd:string;
+            sh:minCount 1; # Required unless `interval` is used instead (interval is on a deprecation path per the docs)
+            sh:maxCount 1;
+         ], [
+            sh:path ldio:interval;
+            sh:name "interval";
+            sh:description "Polling interval declared in ISO 8601 format.";
+            sh:datatype xsd:string;
+            sh:maxCount 1;
+         ], [
+            sh:path ldio:continueOnFail;
+            sh:name "continueOnFail";
+            sh:description "Indicates if polling should continue if a previous poll resulted in failure.";
+            sh:datatype xsd:boolean;
+            sh:maxCount 1;
+         ]
+        ]
+        ] ;
+        tcs:unwrapConfig "CONSTRUCT ..." ;
+        tcs:resolver tcs:apiCheck
+.
+

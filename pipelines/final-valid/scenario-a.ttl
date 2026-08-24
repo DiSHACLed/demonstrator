@@ -1,0 +1,93 @@
+@prefix : <http://example.org/example/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix demo: <http://example.org/example/demonstrator/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix ldio: <http://example.org/example/ldio/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix proc: <http://dishacled.example.org/processors#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdfc: <https://w3id.org/rdf-connect#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix sw: <https://semantic.works/services/> .
+@prefix tcs: <https://w3id.org/toolchain#> .
+@prefix tm: <https://w3id.org/rdf-connect/threshold-monitor#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex:      <https://example.org/> .
+@prefix shape:   <http://www.example.org/shapes/> .
+
+demo:DishacledPipeline a tcs:PipelineDefinition ;
+    rdfs:label "DiSHACLed demonstrator pipeline (scenario a)" ;
+    rdfs:comment """
+        Annotated api -> 
+        polling -> 
+        threshold-monitor -> 
+        oslc:Error alerts in store '->' 
+        email write '->' 
+        delivery 
+        """ .
+
+demo:ApiPoll a tcs:InstancePipelineComponent ;
+    prov:specializationOf ldio:HttpInPoller ;
+    p-plan:isStepOfPlan demo:DishacledPipeline ;
+    p-plan:hasInputVar [
+        a tcs:WrappedPipelineConfig ;
+        tcs:embedded [
+            ldio:source ex:water-measurements-api ; # ! dcat entity here
+            ldio:cron "*/10 * * * * *"
+        ]
+    ] ;
+    dcat:qualifiedRelation [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:outputShape ;
+        dct:relation shape:Observation
+    ] .
+
+[
+    a tcs:Connection ;
+    tcs:from demo:ApiPoll ;
+    tcs:to demo:ThresholdMonitor
+] .
+
+demo:ThresholdMonitor a tcs:InstancePipelineComponent ;
+    prov:specializationOf tm:ThresholdMonitorJs ;
+    p-plan:isStepOfPlan demo:DishacledPipeline ;
+    p-plan:hasInputVar [
+        a tcs:WrappedPipelineConfig ;
+        tcs:embedded [
+            tm:threshold "300.0"^^xsd:double
+        ]
+    ] .
+
+[
+    a tcs:Connection ;
+    tcs:from demo:ThresholdMonitor ;
+    tcs:to demo:TriggerAlert
+] .
+
+demo:TriggerAlert a tcs:InstancePipelineComponent ;
+    prov:specializationOf sw:loket-error-alert-service ;
+    p-plan:isStepOfPlan demo:DishacledPipeline ;
+    p-plan:hasInputVar [
+        a tcs:Config ;
+        tcs:embedded [
+            :EMAIL_FROM "mail@threshold-monitoring.com" ;
+            :EMAIL_TO "firefighters@antwerpen.be" ;
+            :ERROR_TEMPLATE "/mnt/templates/error.hbs"
+        ]
+    ] .
+
+[
+    a tcs:Connection ;
+    tcs:from demo:TriggerAlert ;
+    tcs:do demo:DeliverEmail
+] .
+
+demo:DeliverEmail a tcs:InstancePipelineComponent ;
+    prov:specializationOf sw:deliver-email-service ;
+    p-plan:isStepOfPlan demo:DishacledPipeline .

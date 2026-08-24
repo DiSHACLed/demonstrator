@@ -1,0 +1,3 @@
+# a dict mapping id's to functions
+
+# tcs:apiCheck |-> api_check; simple function that just checks that annotated output shapes subsume those of the annotated shapes of the api in catalog...

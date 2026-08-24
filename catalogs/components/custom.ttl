@@ -1,0 +1,111 @@
+@prefix : <http://example.org/example/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .
+@prefix proc: <http://dishacled.example.org/processors#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfc: <https://w3id.org/rdf-connect#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix tcs: <https://w3id.org/toolchain#> .
+@prefix tm: <https://w3id.org/rdf-connect/threshold-monitor#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix shape:   <http://www.example.org/shapes/> .
+
+tm:ThresholdMonitorJs a tcs:PipelineComponent, dcat:Resource ;
+    rdfs:label "Threshold Monitor (JS)" ;
+    rdfs:description "Compares a numeric value along an RDF path on each incoming SDS member against configurable min/max bounds; emits an oslc:Error on violation." ;
+    dcat:landingPage "https://www.npmjs.com/package/@rdfc/threshold-monitor-processor-ts" ;
+    dct:requires rdfc:NodeRunner ;
+    dct:requires [
+        a spdx:Package ;
+        spdx:name "@rdfc/threshold-monitor-processor-ts" ;
+        spdx:versionInfo "^0.0.1-alpha.2" ;
+        spdx:suppliedBy :npm
+    ] ;
+    owl:imports <./node_modules/@rdfc/threshold-monitor-processor-ts/processor.ttl> ;
+    # Wiring metadata ported from the RDF-Connect package's own SHACL shape
+    # (harvested tm_ThresholdMonitorJs.ttl). `tm:path`'s upstream shape
+    # nests an rdf-lens `PathLens` validator (`:ShaclPathShape`) that isn't
+    # ported here — left as a plain property until that's needed.
+    dcat:qualifiedRelation [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:configShape ;
+        dct:relation [
+            a sh:NodeShape ;
+            sh:message "Checks that tm:ThresholdMonitorJs's wiring (reader/writer/label/creator/max/min/path/stream) is well-typed." ;
+            sh:property [
+                sh:path rdfc:reader ;
+                sh:name "reader" ;
+                sh:class rdfc:Reader ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path rdfc:writer ;
+                sh:name "writer" ;
+                sh:class rdfc:Writer ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path rdfs:label ;
+                sh:name "label" ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path tm:creator ;
+                sh:name "creator" ;
+                sh:nodeKind sh:IRI ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path tm:max ;
+                sh:name "max" ;
+                sh:datatype xsd:double ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path tm:min ;
+                sh:name "min" ;
+                sh:datatype xsd:double ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path tm:path ;
+                sh:name "path" ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ], [
+                sh:path tm:stream ;
+                sh:name "streamId" ;
+                sh:nodeKind sh:IRI ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ] , 
+    [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:wrappedConfigShape ;
+        dct:relation [
+            a sh:NodeShape ;
+            sh:message "Checks that tm:ThresholdMonitorJs's wiring (reader/writer/label/creator/max/min/path/stream) is well-typed." ;
+            sh:property [
+                sh:path tm:threshold ;
+                sh:name "max" ;
+                sh:datatype xsd:double ;
+                sh:maxCount 1 ;
+            ]        
+            ]
+    ] , 
+    [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:inputShape ;
+        dct:relation shape:Observation
+    ] ,
+    [
+        a dcat:Relationship ;
+        dcat:hadRole tcs:outputShape ;
+        dct:relation loket:ErrorShape # this should be the case; but to verify!
+    ] ;
+    tcs:unwrapConfig "CONSTRUCT ...."
+    .
+
+

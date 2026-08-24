@@ -1,0 +1,89 @@
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix iana:    <https://www.iana.org/assignments/media-types/> .
+@prefix ex:      <https://example.org/> .
+@prefix graphs:  <https://example.org/shapes-graphs/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix shape:   <http://www.example.org/shapes/> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema:  <http://schema.org/> .
+@prefix sosa:    <http://www.w3.org/ns/sosa/> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix qudt:    <http://qudt.org/schema/qudt/> .
+@prefix unit:    <http://qudt.org/vocab/unit/> .
+
+ex:water-measurements
+    a dcat:Dataset ;
+    dct:title "Water Measurements"@en ;
+    dcat:distribution ex:water-measurements-api, ex:water-measurements-sample .
+
+ex:water-measurements-api
+    a dcat:Distribution ;
+    dct:title "Water Measurements Distribution (ld-json api)"@en ;
+    dct:format "application/ld+json" ;  
+    dcat:endpointURL "https://dishacled-api.azurewebsites.net/api/v1/source-a/current" .
+
+ex:water-measurements-sample
+    a dcat:Distribution ;
+    dct:title "Water Measurements Sample [2026, 24th of August, 12:00 / 15 min]"@en ;
+    dcat:mediaType iana:text/turtle ;
+    dcat:downloadURL <https://dishacled-api.azurewebsites.net/api/v1/source-a/sample-a-20260824-15m.ttl> ;
+    dcterms:conformsTo shape:Observation, shape:QuantityValue .
+
+# ! below auto-generated shapes from SHACL-play
+
+shape:QuantityValue_unit
+        sh:hasValue  unit:MilliM ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "unit"@en ;
+        sh:nodeKind  sh:IRI ;
+        sh:path      qudt:unit .
+
+shape:Observation_hasResult
+        sh:class     qudt:QuantityValue ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "hasResult"@en ;
+        sh:nodeKind  sh:IRI ;
+        sh:path      sosa:hasResult .
+
+shape:Observation_madeBySensor
+        sh:hasValue  ex:sensor1 ;
+        sh:maxCount  1 ;
+        sh:minCount  1 ;
+        sh:name      "madeBySensor"@en ;
+        sh:nodeKind  sh:IRI ;
+        sh:path      sosa:madeBySensor .
+
+shape:QuantityValue  rdf:type        sh:NodeShape ;
+        rdfs:label                   "QuantityValue"@en ;
+        sh:property                  shape:QuantityValue_unit , shape:QuantityValue_numericValue ;
+        sh:targetClass               qudt:QuantityValue ;
+        shacl-play:background-color  "orange" .
+
+shape:QuantityValue_numericValue
+        dash:propertyRole  dash:LabelRole ;
+        sh:datatype        xsd:decimal ;
+        sh:maxCount        1 ;
+        sh:minCount        1 ;
+        sh:name            "numericValue"@en ;
+        sh:nodeKind        sh:Literal ;
+        sh:path            qudt:numericValue .
+
+shape:Observation  rdf:type          sh:NodeShape ;
+        rdfs:label                   "Observation"@en ;
+        sh:property                  shape:Observation_hasResult , shape:Observation_resultTime , shape:Observation_madeBySensor ;
+        sh:targetClass               sosa:Observation ;
+        shacl-play:background-color  "deeppink" .
+
+shape:Observation_resultTime
+        dash:propertyRole  dash:LabelRole ;
+        sh:datatype        xsd:dateTime ;
+        sh:maxCount        1 ;
+        sh:minCount        1 ;
+        sh:name            "resultTime"@en ;
+        sh:nodeKind        sh:Literal ;
+        sh:path            sosa:resultTime .
