@@ -1,0 +1,93 @@
+PREFIX sw:        <https://semantic.works/services/>
+PREFIX sw-loket:  <https://semantic.works/services/loket-error-alert-service/>
+PREFIX xsd:       <http://www.w3.org/2001/XMLSchema#>
+
+# Unwrap query for sw:loket-error-alert-service.
+#
+# Takes ?config, an instance of the wrappedConfigShape, and constructs triples
+# that satisfy sw:genericSWConfigShape:
+#
+#   sw:DeltaRule                 — constant delta rule JS snippet
+#   sw:DockerEnvironmentVariable — one blank node per env var (sw:Key / sw:Value)
+#   sw:File                      — host path + file contents (only if errorTemplate is set)
+#   sw:DockerMountPath           — host_path:container_path   (only if errorTemplate is set)
+
+CONSTRUCT {
+    # --- Delta rule (constant) ---
+    ?config sw:DeltaRule """
+{
+  match: {
+    predicate: {
+      type: 'uri',
+      value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+    },
+    object: {
+      type: 'uri',
+      value: 'http://open-services.net/ns/core#Error'
+    }
+  },
+  callback: {
+    url: 'http://error-alert/delta',
+    method: 'POST'
+  },
+  options: {
+    resourceFormat: 'v0.0.1',
+    gracePeriod: 1000,
+    ignoreFromSelf: true
+  }
+}""" .
+
+    # --- Required env vars ---
+    ?config sw:DockerEnvironmentVariable ?envEmailFrom .
+    ?envEmailFrom sw:Key "EMAIL_FROM" ;
+                  sw:Value ?emailFrom .
+
+    ?config sw:DockerEnvironmentVariable ?envEmailTo .
+    ?envEmailTo sw:Key "EMAIL_TO" ;
+                sw:Value ?emailTo .
+
+    # --- Optional: DEBUG env var ---
+    ?config sw:DockerEnvironmentVariable ?envDebug .
+    ?envDebug sw:Key "DEBUG" ;
+              sw:Value ?debugStr .
+
+    # --- Optional: custom error template ---
+    # env var pointing container to the mounted file
+    ?config sw:DockerEnvironmentVariable ?envErrorTemplate .
+    ?envErrorTemplate sw:Key "ERROR_TEMPLATE" ;
+                      sw:Value "/mnt/templates/error.hbs" .
+
+    # file to be written by pipeline generator (host path → contents)
+    ?config sw:File ?fileNode .
+    ?fileNode sw:Key "/config/error-alert/error.hbs" ;
+              sw:Value ?errorTemplate .
+
+    # mount entry: host_path:container_path
+    ?config sw:DockerMountPath ?mountNode .
+    ?mountNode sw:Key "/config/error-alert/error.hbs" ;
+               sw:Value "/mnt/templates/error.hbs" .
+}
+WHERE {
+    # required
+    ?config sw-loket:emailFrom ?emailFrom .
+    ?config sw-loket:emailTo   ?emailTo .
+
+    # bind blank nodes for required env vars
+    BIND(BNODE() AS ?envEmailFrom)
+    BIND(BNODE() AS ?envEmailTo)
+
+    # optional: debug
+    OPTIONAL {
+        ?config sw-loket:debug ?debug .
+        BIND(IF(?debug, "true", "false") AS ?debugStr)
+        BIND(BNODE() AS ?envDebug)
+    }
+
+    # optional: error template (contents as string)
+    OPTIONAL {
+        ?config sw-loket:errorTemplate ?errorTemplate .
+        BIND(BNODE() AS ?envErrorTemplate)
+        BIND(BNODE() AS ?fileNode)
+        BIND(BNODE() AS ?mountNode)
+    }
+}

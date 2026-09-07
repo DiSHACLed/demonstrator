@@ -1,0 +1,131 @@
+PREFIX sw:          <https://semantic.works/services/>
+PREFIX sw-deliver:  <https://semantic.works/services/deliver-email-service/>
+PREFIX xsd:         <http://www.w3.org/2001/XMLSchema#>
+
+# Unwrap query for sw:deliver-email-service.
+#
+# Takes ?config, an instance of the wrappedConfigShape, and constructs triples
+# that satisfy sw:genericSWConfigShape:
+#
+#   sw:DockerEnvironmentVariable — one blank node per env var (sw:Key / sw:Value)
+#
+# No delta rules, no files, no mount paths.
+
+CONSTRUCT {
+    # --- Required: protocol choice ---
+    ?config sw:DockerEnvironmentVariable ?envSmtpOrRest .
+    ?envSmtpOrRest sw:Key "SMTP_OR_REST" ;
+                   sw:Value ?smtpOrRest .
+
+    # --- Optional: SMTP transport configuration ---
+    ?config sw:DockerEnvironmentVariable ?envWellKnown .
+    ?envWellKnown sw:Key "WELL_KNOWN_SERVICE_OR_SERVER" ;
+                  sw:Value ?wellKnownServiceOrServer .
+
+    ?config sw:DockerEnvironmentVariable ?envHost .
+    ?envHost sw:Key "HOST" ;
+             sw:Value ?host .
+
+    ?config sw:DockerEnvironmentVariable ?envPort .
+    ?envPort sw:Key "PORT" ;
+             sw:Value ?portStr .
+
+    ?config sw:DockerEnvironmentVariable ?envSecure .
+    ?envSecure sw:Key "SECURE_CONNECTION" ;
+               sw:Value ?secureStr .
+
+    ?config sw:DockerEnvironmentVariable ?envEmailAddress .
+    ?envEmailAddress sw:Key "EMAIL_ADDRESS" ;
+                     sw:Value ?emailAddress .
+
+    ?config sw:DockerEnvironmentVariable ?envEmailPassword .
+    ?envEmailPassword sw:Key "EMAIL_PASSWORD" ;
+                      sw:Value ?emailPassword .
+
+    # --- Optional: email presentation ---
+    ?config sw:DockerEnvironmentVariable ?envFromName .
+    ?envFromName sw:Key "FROM_NAME" ;
+                 sw:Value ?fromName .
+
+    # --- Optional: system configuration ---
+    ?config sw:DockerEnvironmentVariable ?envCronPattern .
+    ?envCronPattern sw:Key "EMAIL_CRON_PATTERN" ;
+                    sw:Value ?emailCronPattern .
+
+    ?config sw:DockerEnvironmentVariable ?envTimeout .
+    ?envTimeout sw:Key "HOURS_DELIVERING_TIMEOUT" ;
+                sw:Value ?timeoutStr .
+
+    ?config sw:DockerEnvironmentVariable ?envGraphName .
+    ?envGraphName sw:Key "GRAPH_NAME" ;
+                  sw:Value ?graphNameStr .
+
+    ?config sw:DockerEnvironmentVariable ?envMailfolderUri .
+    ?envMailfolderUri sw:Key "MAILFOLDER_URI" ;
+                      sw:Value ?mailfolderUriStr .
+}
+WHERE {
+    # required
+    ?config sw-deliver:smtpOrRest ?smtpOrRest .
+    BIND(BNODE() AS ?envSmtpOrRest)
+
+    OPTIONAL {
+        ?config sw-deliver:wellKnownServiceOrServer ?wellKnownServiceOrServer .
+        BIND(BNODE() AS ?envWellKnown)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:host ?host .
+        BIND(BNODE() AS ?envHost)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:port ?port .
+        BIND(STR(?port) AS ?portStr)
+        BIND(BNODE() AS ?envPort)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:secureConnection ?secure .
+        BIND(IF(?secure, "true", "false") AS ?secureStr)
+        BIND(BNODE() AS ?envSecure)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:emailAddress ?emailAddress .
+        BIND(BNODE() AS ?envEmailAddress)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:emailPassword ?emailPassword .
+        BIND(BNODE() AS ?envEmailPassword)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:fromName ?fromName .
+        BIND(BNODE() AS ?envFromName)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:emailCronPattern ?emailCronPattern .
+        BIND(BNODE() AS ?envCronPattern)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:hoursDeliveringTimeout ?timeout .
+        BIND(STR(?timeout) AS ?timeoutStr)
+        BIND(BNODE() AS ?envTimeout)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:graphName ?graphName .
+        BIND(STR(?graphName) AS ?graphNameStr)
+        BIND(BNODE() AS ?envGraphName)
+    }
+
+    OPTIONAL {
+        ?config sw-deliver:mailfolderUri ?mailfolderUri .
+        BIND(STR(?mailfolderUri) AS ?mailfolderUriStr)
+        BIND(BNODE() AS ?envMailfolderUri)
+    }
+}

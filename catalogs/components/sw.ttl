@@ -12,19 +12,63 @@
 @prefix oslc: <http://open-services.net/ns/core#> .
 @prefix nmo:  <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#> .
 @prefix loket: <http://lblod.data.gift/shapes/loket-error-alert-service/> .
+@prefix sw-loket: <https://semantic.works/services/loket-error-alert-service/> .
+@prefix sw-deliver: <https://semantic.works/services/deliver-email-service/> .
 
-# ! We can use a generic config service for semantic works services (enough for what we are using here), providing the following support;
-# 1. delta rule
-# 2. docker variable
-# 3. any file (path + contents)
-# such configs can be easily handled by pipeline generator
+sw:ValuePair a sh:NodeShape ;
+    sh:property [
+        sh:path sw:Key ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] , [
+        sh:path sw:Value ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
 
-# ! Afterwards, we can specify 
-# 1.`tcs:wrappedConfigShape`'s for each service; these specify only the minimal spec required from user
-# 2.`tcs:unwrapConfig` for each service
+sw:DockerEnvironmentVariableShape a sh:NodeShape ;
+    sh:and ( sw:ValuePair ) .
 
-sw:genericSWConfigShape a sh:NodeShape.
-# ....
+sw:DockerMountPathShape a sh:NodeShape ;
+    sh:and ( sw:ValuePair ) .
+
+sw:File a sh:NodeShape ;
+    sh:and ( sw:ValuePair ) .
+
+# Generic interface `sw:genericSWConfigShape` for how semantic works services are configured (each sw service will have this as its literal config)
+# Note; this shape does not really enforce much; it's designed to just be very generic and easily compilable by the pipeline generator
+# Quick strategy for compilation; 
+# 1. append delta rules to config of delta-notifier
+# 2. append docker environment variables per service in compose file
+# 3. append docker mount points per service (if any)
+# 4. write files per service (if any)
+
+sw:genericSWConfigShape a sh:NodeShape ;
+    sh:property [
+        sh:path sw:DeltaRule ;
+        sh:name "Delta Rule" ;
+        sh:description "Delta rule for delta notifier." ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ; # sometimes more?
+    ] , [ 
+        sh:path sw:DockerEnvironmentVariable ;
+        sh:name "Environment Variable in the docker compose file" ;
+        sh:node sw:DockerEnvironmentVariableShape
+    ] , [
+        sh:path sw:DockerMountPath ;
+        sh:name "Mount path in the docker compose file" ;
+        sh:node sw:DockerMountPathShape
+    ] , [
+        sh:path sw:File ;
+        sh:name "File path with its contents" ;
+        sh:node sw:FileShape
+    ] .
+
+# Each sw component will now have;
+# 1. sh:WrappedConfigShape (user-facing config; have user define bare minimum only + strict enforcement of what is expected) 
+# 2. sh:unwrapConfig (construct query that takes an inhabitant of `sh:WrappedConfigShape` and maps it to one of `sh:ConfigShape`)
 
 sw:loket-error-alert-service a tcs:PipelineComponent, mu:Microservice, dcat:Resource ;
   rdfs:description "Service that is responsible for sending out alerts when errors are inserted in the store. Build using the MU Javascript template.";
@@ -40,54 +84,147 @@ sw:loket-error-alert-service a tcs:PipelineComponent, mu:Microservice, dcat:Reso
         dcat:hadRole tcs:outputShape ;
         dct:relation loket:EmailShape
     ] ,
-        [
+    [
         a dcat:Relationship;
         dcat:hadRole tcs:configShape ;
         dct:relation sw:genericSWConfigShape 
-        ],
-        [
+    ],
+    [
         a dcat:Relationship;
         dcat:hadRole tcs:wrappedConfigShape ;
         dct:relation [
-            a sh:NodeShape;
-            # ...
-            # the variables from here https://github.com/lblod/loket-error-alert-service#environment-variables
-            # variable for string of template
-            # with additional constraints that we can express
+            a sh:NodeShape ;
+            sh:property [
+                sh:path sw-loket:emailFrom ;
+                sh:name "Sender email address" ;
+                sh:description "Maps to EMAIL_FROM. Email address used as the sender of alert emails." ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-loket:emailTo ;
+                sh:name "Recipient email address(es)" ;
+                sh:description "Maps to EMAIL_TO. Comma-separated list of recipient email addresses." ;
+                sh:datatype xsd:string ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-loket:debug ;
+                sh:name "Enable debug logging" ;
+                sh:description "Maps to DEBUG. Enables extra logging when true." ;
+                sh:datatype xsd:boolean ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-loket:errorTemplate ;
+                sh:name "Error alert email template" ;
+                sh:description "Maps to ERROR_TEMPLATE. Handlebars (.hbs) template contents for the alert email. When provided, the pipeline generator will write this string to a file and mount it into the container." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ]
         ]
-    ] ; 
-    tcs:unwrapConfig "CONSTRUCT ...." # the delta rule is just a constant https://github.com/lblod/loket-error-alert-service#in-a-musemtech-stack, 
-    # turning the template string into a file... (we can insert request triples to write a file as a hint for the pipeline generator to actually write the file with its contents)
-    # the other variables from above translated trivially to docker variables
-    .
+    ] ;
+    tcs:unwrapConfig <./sw-unwrap-queries/loket-error-alert-service-unwrap.sparql> .
+    # Unwrap strategy:
+    #   - delta rule: constant JS snippet (see README#in-a-musemtech-stack)
+    #   - EMAIL_FROM, EMAIL_TO → docker env vars
+    #   - DEBUG → docker env var (optional)
+    #   - errorTemplate → sw:File (host path + contents) + sw:DockerMountPath (host:container) + ERROR_TEMPLATE env var (optional)
 
 sw:deliver-email-service a tcs:PipelineComponent, mu:Microservice, dcat:Resource ;
   rdfs:description "Microservice that delivers emails from a mail folder" ;
   dcat:landingPage <https://github.com/lblod/berichtencentrum-deliver-email-service> ;
   dct:requires sw:triple-store ,
                sw:mu-identifier ;
-  dcat:qualifiedRelation 
-        [
-            dcat:hadRole tcs:inputShape ;
-            dct:relation loket:MailShape # to verify!
-        ] ,
-        [
+  dcat:qualifiedRelation [
+        dcat:hadRole tcs:inputShape ;
+        dct:relation loket:MailShape # to verify!
+    ] , [
         a dcat:Relationship;
         dcat:hadRole tcs:configShape ;
         dct:relation sw:genericSWConfigShape 
-        ],
-        [
+    ] , [
         a dcat:Relationship;
         dcat:hadRole tcs:wrappedConfigShape ;
         dct:relation [
-            a sh:NodeShape;
-            # ...
-            # the variables from here https://github.com/lblod/berichtencentrum-deliver-email-service#environment-variables
-            # with additional constraints that we can express
+            a sh:NodeShape ;
+            sh:property [
+                sh:path sw-deliver:smtpOrRest ;
+                sh:name "Protocol choice" ;
+                sh:description "Maps to SMTP_OR_REST. Whether to deliver email via SMTP or REST." ;
+                sh:datatype xsd:string ;
+                sh:in ( "smtp" "rest" ) ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:wellKnownServiceOrServer ;
+                sh:name "Well-known service or server" ;
+                sh:description "Maps to WELL_KNOWN_SERVICE_OR_SERVER. A well-known service name from the nodemailer list, or 'server' to configure host/port manually. Required when smtpOrRest is 'smtp'." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:host ;
+                sh:name "SMTP host" ;
+                sh:description "Maps to HOST. Required when wellKnownServiceOrServer is 'server'." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:port ;
+                sh:name "SMTP port" ;
+                sh:description "Maps to PORT. Required when wellKnownServiceOrServer is 'server'." ;
+                sh:datatype xsd:integer ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:secureConnection ;
+                sh:name "Use secure connection" ;
+                sh:description "Maps to SECURE_CONNECTION. Whether to use TLS. Applicable when wellKnownServiceOrServer is 'server'." ;
+                sh:datatype xsd:boolean ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:emailAddress ;
+                sh:name "Email address" ;
+                sh:description "Maps to EMAIL_ADDRESS. The sender email account address." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:emailPassword ;
+                sh:name "Email password" ;
+                sh:description "Maps to EMAIL_PASSWORD. The password for the sender email account." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:fromName ;
+                sh:name "From name" ;
+                sh:description "Maps to FROM_NAME. Display name prepended to the sender email address." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:emailCronPattern ;
+                sh:name "Email cron pattern" ;
+                sh:description "Maps to EMAIL_CRON_PATTERN. Cron expression controlling how often the outbox is polled. Default: '*/1 * * * * *'." ;
+                sh:datatype xsd:string ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:hoursDeliveringTimeout ;
+                sh:name "Hours delivering timeout" ;
+                sh:description "Maps to HOURS_DELIVERING_TIMEOUT. Number of hours before a stuck delivery attempt times out. Default: 1." ;
+                sh:datatype xsd:integer ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:graphName ;
+                sh:name "Email graph" ;
+                sh:description "Maps to GRAPH_NAME. Graph URI where emails live. Default: http://mu.semte.ch/graphs/system/email." ;
+                sh:nodeKind sh:IRI ;
+                sh:maxCount 1 ;
+            ] , [
+                sh:path sw-deliver:mailfolderUri ;
+                sh:name "Mail folder URI" ;
+                sh:description "Maps to MAILFOLDER_URI. URI of the mailbox/outbox folder to poll. Default: http://data.lblod.info/id/mailboxes/1." ;
+                sh:nodeKind sh:IRI ;
+                sh:maxCount 1 ;
+            ]
         ]
-    ] ; 
-    tcs:unwrapConfig "CONSTRUCT ...." ; # no delta rules; no additional files
-    # the variables from above translated trivially to docker variables
+    ] ;
+    tcs:unwrapConfig <./sw-unwrap-queries/deliver-email-service.sparql> .
   tcs:config :DeliverEmailServiceDockerCompose .
 
 # shapes can be more specific and depend on input but yeah...
