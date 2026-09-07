@@ -1,0 +1,25 @@
+catalogs/components/sw-unwrap-queries/deliver-email-service.sparql
+  s_8bee4c8e9140c0::t_c672432987bfb1 1-131
+catalogs/components/sw.ttl
+  s_8bee4c8e9140c0::t_764fa0b2d1c058 15-16
+  s_8bee4c8e9140c0::t_291f2893c722a3 96-123,125-131
+  s_8bee4c8e9140c0::t_a67a9cedc3d9e5 149-224,226-227
+catalogs/components/sw-unwrap-queries/loket-error-alert-service-unwrap.sparql
+  s_8bee4c8e9140c0::t_d3dafee5f04e2c 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "bbc68747341965f5f17054f74098e9db81bf195d",
+  "prompts": {},
+  "sessions": {
+    "s_8bee4c8e9140c0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f84c7837bffe11IMRcQxHtFQri",
+        "model": "claude-sonnet"
+      },
+      "human_author": "koen <koen@koen-21qtcto1ww>"
+    }
+  }
+}
